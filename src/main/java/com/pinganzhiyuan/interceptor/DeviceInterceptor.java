@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -35,7 +36,9 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             MultiReadHttpServletRequest multiReadRequest = new MultiReadHttpServletRequest(
                     (HttpServletRequest) request);
             request = multiReadRequest;
-
+            
+            System.out.println("request.getRequestURI():" + request.getRequestURI() + " request.getMethod(): " + request.getMethod());
+            
             String version = request.getHeader("Version");
             String userId = request.getHeader("User-Id");
             String userAgent = request.getHeader("User-Agent");
@@ -112,6 +115,7 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             if (geoInfo != null) {
                 deviceLog.setGeoInfo(geoInfo);
             }
+            deviceLog.setCreatedAt(new DateTime().toDate());
 
             deviceLogMapper.insert(deviceLog);
 

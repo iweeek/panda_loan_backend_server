@@ -66,4 +66,7 @@
         </mvc:interceptor>
     </mvc:interceptors> 
     
+    <!-- 开启这个配置，spring才能识别@Scheduled注解 -->
+    <task:annotation-driven scheduler="myScheduler"/>
+    <task:scheduler id="myScheduler" pool-size="10"/>
 </beans>

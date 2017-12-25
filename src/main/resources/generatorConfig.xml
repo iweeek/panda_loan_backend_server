@@ -11,7 +11,7 @@
 
   <context id="pinganzhiyuan" targetRuntime="MyBatis3">
     <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-        connectionURL="jdbc:mysql://47.104.72.197:3306/panda_loan"
+        connectionURL="jdbc:mysql://119.23.12.36:3306/panda_loan"
         userId="panda_loan"
         password="panda!QAZ">
     </jdbcConnection>
@@ -20,13 +20,13 @@
       <property name="forceBigDecimals" value="false" />
     </javaTypeResolver>
 
-    <javaModelGenerator targetPackage="com.pinganzhiyuan.model" targetProject="panda_loan">
+    <javaModelGenerator targetPackage="com.pinganzhiyuan.model" targetProject="panda_loan_backend_server">
     </javaModelGenerator>
 
-    <sqlMapGenerator targetPackage="com.pinganzhiyuan.mapper"  targetProject="panda_loan">
+    <sqlMapGenerator targetPackage="com.pinganzhiyuan.mapper"  targetProject="panda_loan_backend_server">
     </sqlMapGenerator>
 
-    <javaClientGenerator type="MIXEDMAPPER" targetPackage="com.pinganzhiyuan.mapper"  targetProject="panda_loan">
+    <javaClientGenerator type="MIXEDMAPPER" targetPackage="com.pinganzhiyuan.mapper"  targetProject="panda_loan_backend_server">
     </javaClientGenerator>
 
     <table schema="panda_loan" tableName="category" domainObjectName ="Category" >
@@ -55,7 +55,6 @@
 
     <table schema="panda_loan" tableName="device_log" domainObjectName ="DeviceLog" >
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
-      <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
     </table>
     
@@ -183,6 +182,20 @@
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
       <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
-    </table>                                             
+    </table>
+    
+    <table schema="panda_loan" tableName="statistic" domainObjectName ="Statistic" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <columnOverride column="average_product_visit_count" javaType="java.lang.Double"/>
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+    
+    <table schema="panda_loan" tableName="product_statistic" domainObjectName ="ProductStatistic" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+   
   </context>
 </generatorConfiguration>
