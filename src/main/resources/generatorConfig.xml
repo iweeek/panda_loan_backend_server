@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+  <!-- 根据本地环境填写JDBC驱动包的路径 -->
+  <!-- <classPathEntry location="/Users/chaiyu/mysql-connector-java-5.1.43/mysql-connector-java-5.1.43-bin.jar" /> -->
+  <classPathEntry location="/Users/nimon/Important/java/mysql-connector/mysql-connector-java-5.1.44-bin.jar" />
+
+  <context id="pinganzhiyuan" targetRuntime="MyBatis3">
+    <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+        connectionURL="jdbc:mysql://47.104.72.197:3306/panda_loan"
+        userId="panda_loan"
+        password="panda!QAZ">
+    </jdbcConnection>
+
+    <javaTypeResolver >
+      <property name="forceBigDecimals" value="false" />
+    </javaTypeResolver>
+
+    <javaModelGenerator targetPackage="com.pinganzhiyuan.model" targetProject="panda_loan">
+    </javaModelGenerator>
+
+    <sqlMapGenerator targetPackage="com.pinganzhiyuan.mapper"  targetProject="panda_loan">
+    </sqlMapGenerator>
+
+    <javaClientGenerator type="MIXEDMAPPER" targetPackage="com.pinganzhiyuan.mapper"  targetProject="panda_loan">
+    </javaClientGenerator>
+
+    <table schema="panda_loan" tableName="category" domainObjectName ="Category" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+        
+    <table schema="panda_loan" tableName="product" domainObjectName ="Product" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+    
+    <table schema="panda_loan" tableName="user" domainObjectName ="User" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+
+    <table schema="panda_loan" tableName="captcha" domainObjectName ="Captcha" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+
+    <table schema="panda_loan" tableName="device_log" domainObjectName ="DeviceLog" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+    
+    <table schema="panda_loan" tableName="credit_auth" domainObjectName ="CreditAuth" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>    
+    
+    <table schema="panda_loan" tableName="banner" domainObjectName ="Banner" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+    
+    <table schema="panda_loan" tableName="top_nav" domainObjectName ="TopNav" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>     
+    
+    <table schema="panda_loan" tableName="mid_nav" domainObjectName ="MidNav" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>  
+    
+    <table schema="panda_loan" tableName="mid_ad" domainObjectName ="MidAd" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>      
+
+    <table schema="panda_loan" tableName="banner_news" domainObjectName ="BannerNews" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>   
+    
+    <table schema="panda_loan" tableName="guarantee" domainObjectName ="Guarantee" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>  
+    
+    <table schema="panda_loan" tableName="product_type" domainObjectName ="ProductType" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table> 
+    
+    <table schema="panda_loan" tableName="guarantee_type_mapping" domainObjectName ="GuaranteeTypeMapping" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>    
+    
+    <table schema="panda_loan" tableName="product_type_mapping" domainObjectName ="ProductTypeMapping" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>  
+    
+    <table schema="panda_loan" tableName="guarantee_product_mapping" domainObjectName ="GuaranteeProductMapping" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>      
+    
+    <table schema="panda_loan" tableName="sms_log" domainObjectName ="SMSLog" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>     
+    
+    <table schema="panda_loan" tableName="loan_amount_range" domainObjectName ="LoanAmountRange" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>  
+    
+    <table schema="panda_loan" tableName="select_order" domainObjectName ="SelectOrder" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>  
+    
+    <table schema="panda_loan" tableName="term" domainObjectName ="Term" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table> 
+    
+    <table schema="panda_loan" tableName="loan_amount_range" domainObjectName ="LoanAmountRange" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>   
+    
+    <table schema="panda_loan" tableName="client" domainObjectName ="Client" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>  
+    
+    <table schema="panda_loan" tableName="client_version" domainObjectName ="ClientVersion" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>   
+    
+    <table schema="panda_loan" tableName="identity_verification" domainObjectName ="IdVerification" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>      
+    
+    <table schema="panda_loan" tableName="top_right_entry" domainObjectName ="TopRightEntry" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>  
+    
+    <table schema="panda_loan" tableName="lender_access_log" domainObjectName ="LenderAccessLog" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>                                             
+  </context>
+</generatorConfiguration>
