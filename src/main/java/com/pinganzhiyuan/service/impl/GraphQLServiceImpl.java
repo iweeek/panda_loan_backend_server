@@ -13,6 +13,7 @@ import com.pinganzhiyuan.graphql.GuaranteeType;
 import com.pinganzhiyuan.graphql.LoanAmountRangeType;
 import com.pinganzhiyuan.graphql.MidAdType;
 import com.pinganzhiyuan.graphql.MidNavType;
+import com.pinganzhiyuan.graphql.ProductStatisticType;
 import com.pinganzhiyuan.graphql.TopNavType;
 import com.pinganzhiyuan.graphql.TopRightEntyType;
 import com.pinganzhiyuan.graphql.RecommendProductType;
@@ -58,6 +59,9 @@ public class GraphQLServiceImpl implements GraphQLService {
                 .field(TopRightEntyType.getSingleQueryField())
                 .field(ClientType.getSingleQueryField())
                 .field(StatisticType.getListQueryField())
+                .field(StatisticType.getSingleQueryField())
+                .field(ProductStatisticType.getListQueryField())
+                .field(ProductStatisticType.getSingleQueryField())
                 .build();
 		
 		GraphQLSchema schema = GraphQLSchema.newSchema()
