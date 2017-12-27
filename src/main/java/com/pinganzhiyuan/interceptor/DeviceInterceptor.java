@@ -49,9 +49,9 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             String ip = request.getRemoteAddr();
 //            String uri = request.getRequestURI();
 
-            if (version == null || userId == null || channelId == null || userAgent == null || deviceId == null || uri == null) {
-                    return false;
-            }
+//            if (version == null || userId == null || channelId == null || userAgent == null || deviceId == null || uri == null) {
+//                    return false;
+//            }
             
 //            String redirectUri = request.getParameter("redirect");
 //            if (redirectUri == null) {
@@ -85,6 +85,7 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             // e.printStackTrace();
             // }
 
+            /*
             String strPageId = request.getParameter("pageId");
             if (strPageId == null) {
                 strPageId = "0";
@@ -118,6 +119,7 @@ public class DeviceInterceptor extends HandlerInterceptorAdapter {
             deviceLog.setCreatedAt(new DateTime().toDate());
 
             deviceLogMapper.insert(deviceLog);
+            */
 
         return super.preHandle(request, response, handler);
     }

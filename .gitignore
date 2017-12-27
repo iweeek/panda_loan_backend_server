@@ -8,6 +8,5 @@ bin
 bin/
 .DS_Store
 /.idea
-src/main/java/com/pinganzhiyuan/model/
-src/main/java/com/pinganzhiyuan/mapper/
+
 

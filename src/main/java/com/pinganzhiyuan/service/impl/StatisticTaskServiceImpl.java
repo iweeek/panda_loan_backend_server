@@ -22,6 +22,10 @@ import com.pinganzhiyuan.model.ProductStatistic;
 import com.pinganzhiyuan.model.Statistic;
 import com.pinganzhiyuan.service.StatisticTaskService;
 
+/**
+ * 埋点统计任务
+ * @author SmartNi
+ */
 @Service
 public class StatisticTaskServiceImpl implements StatisticTaskService {
 
@@ -47,8 +51,6 @@ public class StatisticTaskServiceImpl implements StatisticTaskService {
         
         for (DeviceLog d : allList) {
             for (DeviceLog device : yesterdayList) {
-                logger.info("d.getDeviceId(): " + d.getDeviceId());
-                logger.info("device.getDeviceId(): " + device.getDeviceId());
                 if (d.getDeviceId().equals(device.getDeviceId())) {
                     temp.remove(device);
                 }
@@ -84,6 +86,7 @@ public class StatisticTaskServiceImpl implements StatisticTaskService {
         return temp.size();
     }
 
+    // 产品访问总次数
     @Override
     public int productVisitTotalCount(Date startDate, Date endDate) {
         DeviceLogExample example = new DeviceLogExample();
@@ -101,7 +104,11 @@ public class StatisticTaskServiceImpl implements StatisticTaskService {
     @Override
     public double averageProductVisitCount(Date startDate, Date endDate) {
         int userCount = deviceLogMapper.getAllProductVisitUserDataList(startDate, endDate).size();
+        // 所有人浏览的产品数
         List<DeviceLog> visitCount = deviceLogMapper.getAverageUserVisitProductDataList(startDate, endDate);
+        if (userCount == 0) {
+            return 0;
+        }
         BigDecimal b = new BigDecimal(visitCount.size()).divide(new BigDecimal(userCount), 1, RoundingMode.HALF_DOWN);
         return b.doubleValue();
     }
@@ -124,7 +131,7 @@ public class StatisticTaskServiceImpl implements StatisticTaskService {
         statistic.setProductVisitUserTotalCount(productVisitUserTotalCount);
         statistic.setProductVisitTotalCount(productVisitTotalCount);
         statistic.setAverageProductVisitCount(averageProductVisitCount);
-        statistic.setRecordDate(new DateTime().toDate());
+        statistic.setRecordDate(new DateTime(startDate).toDate());
         
         statisticMapper.insert(statistic);
     }
