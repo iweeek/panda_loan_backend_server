@@ -6,12 +6,12 @@
 <generatorConfiguration>
 
   <!-- 根据本地环境填写JDBC驱动包的路径 -->
-  <!-- <classPathEntry location="/Users/chaiyu/mysql-connector-java-5.1.43/mysql-connector-java-5.1.43-bin.jar" /> -->
-  <classPathEntry location="/Users/nimon/Important/java/mysql-connector/mysql-connector-java-5.1.44-bin.jar" />
+  <classPathEntry location="/Users/chaiyu/mysql-connector-java-5.1.43/mysql-connector-java-5.1.43-bin.jar" />
+ <!--  <classPathEntry location="/Users/nimon/Important/java/mysql-connector/mysql-connector-java-5.1.44-bin.jar" /> -->
 
   <context id="pinganzhiyuan" targetRuntime="MyBatis3">
     <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-        connectionURL="jdbc:mysql://47.104.72.197:3306/panda_loan"
+        connectionURL="jdbc:mysql://119.23.12.36:3306/panda_loan"
         userId="panda_loan"
         password="panda!QAZ">
     </jdbcConnection>
@@ -20,13 +20,13 @@
       <property name="forceBigDecimals" value="false" />
     </javaTypeResolver>
 
-    <javaModelGenerator targetPackage="com.pinganzhiyuan.model" targetProject="panda_loan">
+    <javaModelGenerator targetPackage="com.pinganzhiyuan.model" targetProject="panda_loan_backend_server">
     </javaModelGenerator>
 
-    <sqlMapGenerator targetPackage="com.pinganzhiyuan.mapper"  targetProject="panda_loan">
+    <sqlMapGenerator targetPackage="com.pinganzhiyuan.mapper"  targetProject="panda_loan_backend_server">
     </sqlMapGenerator>
 
-    <javaClientGenerator type="MIXEDMAPPER" targetPackage="com.pinganzhiyuan.mapper"  targetProject="panda_loan">
+    <javaClientGenerator type="MIXEDMAPPER" targetPackage="com.pinganzhiyuan.mapper"  targetProject="panda_loan_backend_server">
     </javaClientGenerator>
 
     <table schema="panda_loan" tableName="category" domainObjectName ="Category" >

@@ -15,4 +15,4 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'panda_loan'
+rootProject.name = 'panda_loan_backend_server'
