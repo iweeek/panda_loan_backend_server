@@ -8,5 +8,11 @@ bin
 bin/
 .DS_Store
 /.idea
+<<<<<<< HEAD
 
+||||||| merged common ancestors
+src/main/java/com/pinganzhiyuan/model/
+src/main/java/com/pinganzhiyuan/mapper/
+=======
+>>>>>>> master
 
