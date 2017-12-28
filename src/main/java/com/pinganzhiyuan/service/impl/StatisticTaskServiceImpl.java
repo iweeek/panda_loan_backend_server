@@ -14,12 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pinganzhiyuan.mapper.DeviceLogMapper;
+import com.pinganzhiyuan.mapper.DeviceMapper;
 import com.pinganzhiyuan.mapper.ProductStatisticMapper;
 import com.pinganzhiyuan.mapper.StatisticMapper;
+import com.pinganzhiyuan.mapper.UserMapper;
+import com.pinganzhiyuan.model.Device;
 import com.pinganzhiyuan.model.DeviceLog;
 import com.pinganzhiyuan.model.DeviceLogExample;
 import com.pinganzhiyuan.model.ProductStatistic;
 import com.pinganzhiyuan.model.Statistic;
+import com.pinganzhiyuan.model.User;
 import com.pinganzhiyuan.service.StatisticTaskService;
 
 /**
@@ -31,6 +35,12 @@ public class StatisticTaskServiceImpl implements StatisticTaskService {
 
     @Autowired
     private DeviceLogMapper deviceLogMapper;
+    
+    @Autowired
+    private DeviceMapper deviceMapper;
+    
+    @Autowired
+    private UserMapper usesrMapper;
     
     @Autowired
     StatisticMapper statisticMapper;
@@ -45,23 +55,36 @@ public class StatisticTaskServiceImpl implements StatisticTaskService {
     public int newDeviceCount(Date startDate, Date endDate) {
 //   example.createCriteria().andCreatedAtBetween(startDate, endDate);
         
-        List<DeviceLog> yesterdayList = deviceLogMapper.getGroupByDeviceDataList(startDate, endDate);
-        List<DeviceLog> allList = deviceLogMapper.getAllGroupByDeviceDataList(startDate);
+        List<DeviceLog> yesterdayList = deviceLogMapper.getDeviceLogBetweenDataList(startDate, endDate);
+//        List<DeviceLog> allList = deviceLogMapper.getAllGroupByDeviceDataList(startDate);
+        List<Device> exisitList = deviceMapper.getExisitDeviceDataList(startDate, endDate);
         List<DeviceLog> temp = new ArrayList<>(yesterdayList);
         
-        for (DeviceLog d : allList) {
+        for (Device d : exisitList) {
             for (DeviceLog device : yesterdayList) {
                 if (d.getDeviceId().equals(device.getDeviceId())) {
                     temp.remove(device);
                 }
             }
         }
+        
+        Device device = null;
+        for (DeviceLog log : temp) {
+            device = new Device();
+            device.setDeviceId(log.getDeviceId());
+            device.setUserId(log.getUserId());
+            device.setUserAgent(log.getUserAgent());
+            device.setVersion(log.getVersion());
+            device.setChannelId(log.getChannelId());
+            device.setRecordDate(new DateTime(log.getCreatedAt()).toDate());
+            deviceMapper.insert(device);
+        }
         return temp.size();
     }
     // 访问设备数
     @Override
     public int deviceVisitCount(Date startDate, Date endDate) {
-        return deviceLogMapper.getGroupByDeviceDataList(startDate, endDate).size();
+        return deviceLogMapper.getDeviceLogBetweenDataList(startDate, endDate).size();
     }
 
     // 访问用户数
@@ -73,12 +96,13 @@ public class StatisticTaskServiceImpl implements StatisticTaskService {
     @Override
     public int newUserCount(Date startDate, Date endDate) {
         List<DeviceLog> yesterdayList = deviceLogMapper.getGroupByUserDataList(startDate, endDate);
-        List<DeviceLog> allList = deviceLogMapper.getAllGroupByUserDataList(startDate);
+//        List<DeviceLog> allList = deviceLogMapper.getAllGroupByUserDataList(startDate);
+        List<User> exisitList = usesrMapper.getExisitUserDataList(startDate, endDate);
         List<DeviceLog> temp = new ArrayList<>(yesterdayList);
         
-        for (DeviceLog d : allList) {
+        for (User u : exisitList) {
             for (DeviceLog device : yesterdayList) {
-                if (d.getUserId().equals(device.getUserId())) {
+                if (u.getId().equals(device.getUserId())) {
                     temp.remove(device);
                 }
             }

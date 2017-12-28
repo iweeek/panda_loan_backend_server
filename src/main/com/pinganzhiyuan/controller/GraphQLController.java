@@ -58,7 +58,11 @@ public class GraphQLController {
     public ResponseEntity<?> query(@RequestParam String query) {
         logger.debug("query query: " + query);
         System.out.println("query query: " + query);
+        try {
         ExecutionResult result = graphQLService.query(query);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (result.getErrors() != null) {
             System.out.println("query result errors: " + result.getErrors());
             System.out.println("query result data: " + result.getData());

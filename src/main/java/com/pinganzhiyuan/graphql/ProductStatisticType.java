@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 import com.github.pagehelper.PageHelper;
 import com.pinganzhiyuan.mapper.ProductStatisticMapper;
 import com.pinganzhiyuan.mapper.StatisticMapper;
+import com.pinganzhiyuan.model.ProductExample;
 import com.pinganzhiyuan.model.ProductStatistic;
+import com.pinganzhiyuan.model.ProductStatisticExample;
 import com.pinganzhiyuan.model.Statistic;
 
 import graphql.Scalars;
@@ -94,18 +96,27 @@ public class ProductStatisticType {
         return singleQueryField;
     }
     
+    /**
+     * 得到某一天产品统计记录
+     * @return
+     */
     public static GraphQLFieldDefinition getListQueryField() {
         if(listQueryField == null) {
             listQueryField = GraphQLFieldDefinition.newFieldDefinition()
                     .argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
                     .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
+                    .argument(GraphQLArgument.newArgument().name("recordDate").type(Scalars.GraphQLString).build())
                     .name("productStatistics")
                     .description("产品统计列表")
                     .type(PageType.getPageTypeBuidler(getType()).name("ProductStatisticPage").description("产品统计类型分页").build())
                     .dataFetcher(environment ->  {
                         PageHelper.startPage(environment.getArgument("pageNumber"),
                                 environment.getArgument("pageSize"));
-                        List<ProductStatistic> list = productStatisticMapper.selectByExample(null);
+                        String recordDate = environment.getArgument("recordDate");
+                        Date date = new DateTime(recordDate).toDate();
+                        ProductStatisticExample example = new ProductStatisticExample();
+                        example.createCriteria().andRecordDateEqualTo(date);
+                        List<ProductStatistic> list = productStatisticMapper.selectByExample(example);
                         return list;
                     } ).build();
         }

@@ -1,7 +1,15 @@
 /.gradle/
 .classpath
+<<<<<<< Updated upstream
 /.settings
 .project
+||||||| merged common ancestors
+
+
+=======
+.project
+.settings/
+>>>>>>> Stashed changes
 /build
 bin
 /bin

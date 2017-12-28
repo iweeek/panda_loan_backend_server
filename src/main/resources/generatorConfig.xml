@@ -43,6 +43,7 @@
     
     <table schema="panda_loan" tableName="user" domainObjectName ="User" >
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <columnOverride column="is_man" javaType="java.lang.Boolean"/>
       <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
     </table>
