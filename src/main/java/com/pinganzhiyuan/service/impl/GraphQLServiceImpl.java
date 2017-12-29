@@ -66,6 +66,7 @@ public class GraphQLServiceImpl implements GraphQLService {
                 .field(ProductStatisticType.getListQueryField())
                 .field(ProductStatisticType.getSingleQueryField())
                 .field(DeviceLogType.getDeviceVisitListQueryField())
+                .field(DeviceLogType.getProductDeviceLogListQueryField())
                 .field(DeviceType.getNewDeviceListQueryField())
                 .field(UserType.getNewUserListQueryField())
                 .field(UserType.getUserVisitListQueryField())

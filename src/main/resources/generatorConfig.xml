@@ -6,8 +6,8 @@
 <generatorConfiguration>
 
   <!-- 根据本地环境填写JDBC驱动包的路径 -->
-  <classPathEntry location="/Users/chaiyu/mysql-connector-java-5.1.43/mysql-connector-java-5.1.43-bin.jar" />
- <!--  <classPathEntry location="/Users/nimon/Important/java/mysql-connector/mysql-connector-java-5.1.44-bin.jar" /> -->
+  <!-- <classPathEntry location="/Users/chaiyu/mysql-connector-java-5.1.43/mysql-connector-java-5.1.43-bin.jar" /> -->
+  <classPathEntry location="/Users/nimon/Important/java/mysql-connector/mysql-connector-java-5.1.44-bin.jar" />
 
   <context id="pinganzhiyuan" targetRuntime="MyBatis3">
     <jdbcConnection driverClass="com.mysql.jdbc.Driver"
@@ -56,6 +56,7 @@
 
     <table schema="panda_loan" tableName="device_log" domainObjectName ="DeviceLog" >
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <columnOverride column="is_webview" javaType="java.lang.Boolean"/>
       <ignoreColumn column="updated_at"/>
     </table>
     

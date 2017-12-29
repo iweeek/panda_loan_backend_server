@@ -9,9 +9,13 @@ import org.springframework.stereotype.Component;
 
 import com.github.pagehelper.PageHelper;
 import com.pinganzhiyuan.mapper.DeviceLogMapper;
+import com.pinganzhiyuan.mapper.ProductStatisticMapper;
 import com.pinganzhiyuan.mapper.StatisticMapper;
 import com.pinganzhiyuan.model.DeviceLog;
+import com.pinganzhiyuan.model.DeviceLogExample;
+import com.pinganzhiyuan.model.ProductStatistic;
 import com.pinganzhiyuan.model.Statistic;
+import com.pinganzhiyuan.model.User;
 
 import graphql.Scalars;
 import graphql.schema.GraphQLArgument;
@@ -20,7 +24,7 @@ import graphql.schema.GraphQLObjectType;
 
 @Component
 public class DeviceLogType {
-//    private static GraphQLFieldDefinition singleQueryField;
+    private static GraphQLFieldDefinition productDeviceLogQueryField;
 //    private static GraphQLFieldDefinition newDeviceListQueryField;
 //    private static GraphQLFieldDefinition newUserListQueryField;
 //    private static GraphQLFieldDefinition userVisitListQueryField;
@@ -30,7 +34,8 @@ public class DeviceLogType {
     
     private static DeviceLogMapper deviceLogMapper;
     private static StatisticMapper statisticMapper;
-
+    private static ProductStatisticMapper productStatisticMapper;
+    
     private static GraphQLObjectType type;
 
     public static GraphQLObjectType getType() {
@@ -133,8 +138,34 @@ public class DeviceLogType {
         return type;
     }
     
+    /**
+     * 点击某一个产品
+     * @return
+     */
+    public static GraphQLFieldDefinition getProductDeviceLogListQueryField() {
+        if(productDeviceLogQueryField == null) {
+            productDeviceLogQueryField = GraphQLFieldDefinition.newFieldDefinition()
+                    .argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
+                    .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
+                    .argument(GraphQLArgument.newArgument().name("id").type(Scalars.GraphQLLong).build())
+                    .name("productDeviceLogStatistic")
+                    .description("某个产品的访问记录列表")
+                    .type(PageType.getPageTypeBuidler(getType()).name("productDeviceLogPage").description("某个产品的访问记录类型分页").build())
+                    .dataFetcher(environment -> {
+                        long id = environment.getArgument("id");
+                        ProductStatistic ps = productStatisticMapper.selectByPrimaryKey(id);
+                        DeviceLogExample example = new DeviceLogExample();
+                        Date startDate = ps.getRecordDate();
+                        Date endDate = new DateTime(startDate).plusDays(1).toDate();
+                        
+                        example.createCriteria().andPIdEqualTo(ps.getProductId()).andCreatedAtBetween(startDate, endDate);
+                        List<DeviceLog> list = deviceLogMapper.selectByExample(example);
+                        return list;
+                    }).build();
+        }
+        return productDeviceLogQueryField;
+    }
     
-
     public static GraphQLFieldDefinition getDeviceVisitListQueryField() {
         if(deviceVisitListQueryField == null) {
             deviceVisitListQueryField = GraphQLFieldDefinition.newFieldDefinition()
@@ -271,6 +302,11 @@ public class DeviceLogType {
     @Autowired(required = true)
     public void setStatisticMapper(StatisticMapper statisticMapper) {
         DeviceLogType.statisticMapper = statisticMapper;
+    }
+    
+    @Autowired(required = true)
+    public void setProductStatisticMapper(ProductStatisticMapper productStatisticMapper) {
+        DeviceLogType.productStatisticMapper = productStatisticMapper;
     }
     
 }

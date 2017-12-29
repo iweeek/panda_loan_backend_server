@@ -25,9 +25,6 @@ import graphql.schema.GraphQLObjectType;
 public class UserType {
     private static GraphQLFieldDefinition newUserListQueryField;
     private static GraphQLFieldDefinition userVisitListQueryField;
-//    private static GraphQLFieldDefinition deviceVisitListQueryField;
-//    private static GraphQLFieldDefinition totalProductVisitListQueryField;
-//    private static GraphQLFieldDefinition totalProductVisitUserListQueryField;
     
     private static UserMapper userMapper;
     private static StatisticMapper statisticMapper;
@@ -73,10 +70,6 @@ public class UserType {
                             .newFieldDefinition().name("isMan")
                             .description("性别")
                             .type(Scalars.GraphQLBoolean)
-//                            .dataFetcher(environment -> {
-//                                User u = environment.getSource();
-//                                return u.getIsMan();
-//                            })
                             .build())
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("nation")
@@ -142,8 +135,8 @@ public class UserType {
                     .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
                     .argument(GraphQLArgument.newArgument().name("id").type(Scalars.GraphQLLong).build())
                     .name("newUserStatistics")
-                    .description("埋点统计列表")
-                    .type(PageType.getPageTypeBuidler(getType()).name("newUserStatisticPage").description("埋点统计类型分页").build())
+                    .description("新增用户列表")
+                    .type(PageType.getPageTypeBuidler(getType()).name("newUserStatisticPage").description("新增用户类型分页").build())
                     .dataFetcher(environment ->  {
                         PageHelper.startPage(environment.getArgument("pageNumber"),
                                 environment.getArgument("pageSize"));
@@ -182,55 +175,6 @@ public class UserType {
         }
         return userVisitListQueryField;
     }
-    
-//    public static GraphQLFieldDefinition getTotalProductVisitListQueryField() {
-//        if(totalProductVisitListQueryField == null) {
-//            totalProductVisitListQueryField = GraphQLFieldDefinition.newFieldDefinition()
-//                    .argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
-//                    .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
-//                    .argument(GraphQLArgument.newArgument().name("id").type(Scalars.GraphQLLong).build())
-//                    .name("totalProductVisitStatistics")
-//                    .description("埋点统计列表")
-//                    .type(PageType.getPageTypeBuidler(getType()).name("totalProductVisitStatisticPage").description("埋点统计类型分页").build())
-//                    .dataFetcher(environment ->  {
-//                        PageHelper.startPage(environment.getArgument("pageNumber"),
-//                                environment.getArgument("pageSize"));
-//                        Long id = environment.getArgument("id");
-//                        Statistic st = statisticMapper.selectByPrimaryKey(id);
-//                        Date startDate = st.getRecordDate();
-//                        Date endDate = new DateTime(st.getRecordDate()).plusDays(1).toDate();
-//                        
-//                        DeviceLogExample example = new DeviceLogExample();
-//                        example.createCriteria().andCreatedAtBetween(startDate, endDate).andPIdIsNotNull();
-//                        List<DeviceLog> list = deviceMapper.selectByExample(example);
-//                        return list;
-//                    } ).build();
-//        }
-//        return totalProductVisitListQueryField;
-//    }
-//    
-//    public static GraphQLFieldDefinition getTotalProductVisitUserListQueryField() {
-//        if(totalProductVisitUserListQueryField == null) {
-//            totalProductVisitUserListQueryField = GraphQLFieldDefinition.newFieldDefinition()
-//                    .argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
-//                    .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
-//                    .argument(GraphQLArgument.newArgument().name("id").type(Scalars.GraphQLLong).build())
-//                    .name("totalProductUserVisitStatistics")
-//                    .description("埋点统计列表")
-//                    .type(PageType.getPageTypeBuidler(getType()).name("totalProductUserVisitStatisticPage").description("埋点统计类型分页").build())
-//                    .dataFetcher(environment ->  {
-//                        PageHelper.startPage(environment.getArgument("pageNumber"),
-//                                environment.getArgument("pageSize"));
-//                        Long id = environment.getArgument("id");
-//                        Statistic st = statisticMapper.selectByPrimaryKey(id);
-//                        Date startDate = st.getRecordDate();
-//                        Date endDate = new DateTime(st.getRecordDate()).plusDays(1).toDate();
-//                        List<Device> list = deviceMapper.getAllProductVisitUserDataList(startDate, endDate);
-//                        return list;
-//                    } ).build();
-//        }
-//        return totalProductVisitUserListQueryField;
-//    }
     
     @Autowired(required = true)
     public void setStatisticMapper(StatisticMapper statisticMapper) {

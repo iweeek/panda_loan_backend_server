@@ -9,16 +9,12 @@ import org.springframework.stereotype.Component;
 
 import com.github.pagehelper.PageHelper;
 import com.pinganzhiyuan.mapper.ProductStatisticMapper;
-import com.pinganzhiyuan.mapper.StatisticMapper;
-import com.pinganzhiyuan.model.ProductExample;
 import com.pinganzhiyuan.model.ProductStatistic;
 import com.pinganzhiyuan.model.ProductStatisticExample;
-import com.pinganzhiyuan.model.Statistic;
 
 import graphql.Scalars;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
-import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLObjectType;
 
 @Component
