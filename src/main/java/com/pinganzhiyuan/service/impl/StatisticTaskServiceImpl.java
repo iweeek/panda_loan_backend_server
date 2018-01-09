@@ -67,8 +67,9 @@ public class StatisticTaskServiceImpl implements StatisticTaskService {
                 }
             }
         }
+		return 0;
         
-        Device device = null;
+        /*Device device = null;
         for (DeviceLog log : temp) {
             device = new Device();
             device.setDeviceId(log.getDeviceId());
@@ -79,7 +80,7 @@ public class StatisticTaskServiceImpl implements StatisticTaskService {
             device.setRecordDate(new DateTime(log.getCreatedAt()).toDate());
             deviceMapper.insert(device);
         }
-        return temp.size();
+        return temp.size();*/
     }
     // 访问设备数
     @Override

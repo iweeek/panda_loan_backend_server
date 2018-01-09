@@ -9,15 +9,20 @@ import com.pinganzhiyuan.graphql.BannerType;
 import com.pinganzhiyuan.graphql.ClientType;
 import com.pinganzhiyuan.graphql.ClientVersionType;
 import com.pinganzhiyuan.graphql.CreditAuthType;
+import com.pinganzhiyuan.graphql.DateTransformType;
 import com.pinganzhiyuan.graphql.DeviceLogType;
+import com.pinganzhiyuan.graphql.DeviceStatisticTimeType;
+import com.pinganzhiyuan.graphql.DeviceStatisticType;
 import com.pinganzhiyuan.graphql.DeviceType;
 import com.pinganzhiyuan.graphql.GuaranteeType;
 import com.pinganzhiyuan.graphql.LoanAmountRangeType;
+import com.pinganzhiyuan.graphql.LogInType;
 import com.pinganzhiyuan.graphql.MidAdType;
 import com.pinganzhiyuan.graphql.MidNavType;
 import com.pinganzhiyuan.graphql.ProductStatisticType;
 import com.pinganzhiyuan.graphql.TopNavType;
 import com.pinganzhiyuan.graphql.TopRightEntyType;
+import com.pinganzhiyuan.graphql.UserPortrayalType;
 import com.pinganzhiyuan.graphql.UserType;
 import com.pinganzhiyuan.graphql.RecommendProductType;
 import com.pinganzhiyuan.graphql.SelectOrderType;
@@ -67,10 +72,14 @@ public class GraphQLServiceImpl implements GraphQLService {
                 .field(ProductStatisticType.getSingleQueryField())
                 .field(DeviceLogType.getDeviceVisitListQueryField())
                 .field(DeviceLogType.getProductDeviceLogListQueryField())
-                .field(DeviceType.getNewDeviceListQueryField())
+                .field(DeviceType.getListQueryField())
                 .field(UserType.getNewUserListQueryField())
                 .field(UserType.getUserVisitListQueryField())
-                
+                .field(DeviceStatisticType.getListQueryField())
+                .field(DeviceStatisticTimeType.getListQueryField())
+                .field(UserPortrayalType.getListQueryField())
+                .field(LogInType.getListQueryField())
+                .field(DateTransformType.getListQueryField())
                 .build();
 		
 		GraphQLSchema schema = GraphQLSchema.newSchema()

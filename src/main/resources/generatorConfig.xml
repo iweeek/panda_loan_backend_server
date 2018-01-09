@@ -7,8 +7,10 @@
 
   <!-- 根据本地环境填写JDBC驱动包的路径 -->
   <!-- <classPathEntry location="/Users/chaiyu/mysql-connector-java-5.1.43/mysql-connector-java-5.1.43-bin.jar" /> -->
-  <classPathEntry location="/Users/nimon/Important/java/mysql-connector/mysql-connector-java-5.1.44-bin.jar" />
-
+  <!-- <classPathEntry location="/Users/nimon/Important/java/mysql-connector/mysql-connector-java-5.1.44-bin.jar" />
+ -->
+ <classPathEntry location="C:/Users/mysql-connector-java-5.1.44/mysql-connector-java-5.1.44-bin.jar" />
+ 
   <context id="pinganzhiyuan" targetRuntime="MyBatis3">
     <jdbcConnection driverClass="com.mysql.jdbc.Driver"
         connectionURL="jdbc:mysql://119.23.12.36:3306/panda_loan"
@@ -44,7 +46,6 @@
     <table schema="panda_loan" tableName="user" domainObjectName ="User" >
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
       <columnOverride column="is_man" javaType="java.lang.Boolean"/>
-      <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
     </table>
 
@@ -56,7 +57,7 @@
 
     <table schema="panda_loan" tableName="device_log" domainObjectName ="DeviceLog" >
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
-      <columnOverride column="is_webview" javaType="java.lang.Boolean"/>
+      <columnOverride column="is_webview" javaType="java.lang.Integer"/>
       <ignoreColumn column="updated_at"/>
     </table>
     
@@ -158,7 +159,6 @@
     
     <table schema="panda_loan" tableName="client" domainObjectName ="Client" >
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
-      <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
     </table>  
     
@@ -198,6 +198,46 @@
       <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
     </table>
+    
+    <table schema="panda_loan" tableName="statistic_device" domainObjectName ="Device" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <columnOverride column="is_root" javaType="java.lang.Boolean"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
    
+    <table schema="panda_loan" tableName="channel" domainObjectName ="Channel" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+    
+    <table schema="panda_loan" tableName="statistic_device_daily" domainObjectName ="DeviceStatisticDaily" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="updated_at"/>
+    </table>
+    
+    <table schema="panda_loan" tableName="statistic_device_time" domainObjectName ="DeviceStatisticTime" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="updated_at"/>
+    </table>
+    
+    <table schema="panda_loan" tableName="statistic_user_portrayal" domainObjectName="UserPortrayal">
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <columnOverride column="is_man" javaType="java.lang.Boolean"/>
+      <columnOverride column="is_approve" javaType="java.lang.Boolean"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+    
+    <table schema="panda_loan" tableName="statistic_log_in_daily" domainObjectName="LogInStatisticDaily">
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="updated_at"/>
+    </table>
+    
+    <table schema="panda_loan" tableName="statistic_date_transform" domainObjectName="StatisticDateTransform">
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <columnOverride column="is_request_code" javaType="java.lang.Boolean"/>
+      <columnOverride column="is_request_register" javaType="java.lang.Boolean"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
   </context>
 </generatorConfiguration>

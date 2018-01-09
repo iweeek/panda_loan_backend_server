@@ -1,265 +1,192 @@
 package com.pinganzhiyuan.graphql;
 
-import java.util.ArrayList;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.github.pagehelper.PageHelper;
-import com.pinganzhiyuan.mapper.DeviceLogMapper;
 import com.pinganzhiyuan.mapper.DeviceMapper;
-import com.pinganzhiyuan.mapper.StatisticMapper;
-import com.pinganzhiyuan.mapper.UserMapper;
+import com.pinganzhiyuan.mapper.DeviceStatisticDailyMapper;
+import com.pinganzhiyuan.mapper.DeviceStatisticTimeMapper;
 import com.pinganzhiyuan.model.Device;
 import com.pinganzhiyuan.model.DeviceExample;
-import com.pinganzhiyuan.model.DeviceLog;
-import com.pinganzhiyuan.model.DeviceLogExample;
-import com.pinganzhiyuan.model.Statistic;
-import com.pinganzhiyuan.model.User;
+import com.pinganzhiyuan.model.DeviceExample.Criteria;
+import com.pinganzhiyuan.model.DeviceStatisticDaily;
+import com.pinganzhiyuan.model.DeviceStatisticTime;
 
 import graphql.Scalars;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLObjectType;
-
 @Component
 public class DeviceType {
-//    private static GraphQLFieldDefinition singleQueryField;
-    private static GraphQLFieldDefinition newDeviceListQueryField;
-//    private static GraphQLFieldDefinition newUserListQueryField;
-//    private static GraphQLFieldDefinition userVisitListQueryField;
-    private static GraphQLFieldDefinition deviceVisitListQueryField;
-//    private static GraphQLFieldDefinition totalProductVisitListQueryField;
-//    private static GraphQLFieldDefinition totalProductVisitUserListQueryField;
-    
-    private static DeviceMapper deviceMapper;
-    private static DeviceLogMapper deviceLogMapper;
-    private static UserMapper userMapper;
-    private static StatisticMapper statisticMapper;
-
-    private static GraphQLObjectType type;
-
-    public static GraphQLObjectType getType() {
+	private static GraphQLFieldDefinition listQueryField;
+	private static GraphQLObjectType type;
+	private static DeviceMapper deviceMapper;
+	private static DeviceStatisticDailyMapper deviceStatisticDailyMapper;
+	private static DeviceStatisticTimeMapper deviceStatisticTimeMapper;
+	
+	public static GraphQLObjectType getType() {
         if (type == null) {
             type = GraphQLObjectType
-                    .newObject().name("Device").description("统计")
+                    .newObject().name("Device").description("Device")
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("id")
                             .description("唯一主键")
                             .type(Scalars.GraphQLLong)
                             .build())
-//                    .field(GraphQLFieldDefinition
-//                            .newFieldDefinition().name("uri")
-//                            .description("请求路径")
-//                            .type(Scalars.GraphQLString)
-//                            .build())
-//                    .field(GraphQLFieldDefinition
-//                            .newFieldDefinition().name("pageId")
-//                            .description("页码ID")
-//                            .type(Scalars.GraphQLLong)
-//                            .build())
-//                    .field(GraphQLFieldDefinition
-//                            .newFieldDefinition().name("pId")
-//                            .description("产品ID")
-//                            .type(Scalars.GraphQLLong)
-//                            .build())
-                    .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("userId")
-                            .description("用户ID")
-                            .type(Scalars.GraphQLLong)
-                            .build())
-//                    .field(GraphQLFieldDefinition
-//                            .newFieldDefinition().name("ip")
-//                            .description("ip")
-//                            .type(Scalars.GraphQLString)
-//                            .build())
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("deviceId")
-                            .description("设备Id")
+                            .description("设备生成唯一标识")
                             .type(Scalars.GraphQLString)
                             .build())
                     .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("userAgent")
-                            .description("userAgent")
+                            .newFieldDefinition().name("userId")
+                            .description("用户主键")
+                            .type(Scalars.GraphQLLong)
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("deviceBrand")
+                            .description("设备品牌")
                             .type(Scalars.GraphQLString)
                             .build())
-//                    .field(GraphQLFieldDefinition
-//                            .newFieldDefinition().name("urlType")
-//                            .description("urlType")
-//                            .type(Scalars.GraphQLString)
-//                            .build())
-//                    .field(GraphQLFieldDefinition
-//                            .newFieldDefinition().name("isWebview")
-//                            .description("isWebview")
-//                            .type(Scalars.GraphQLBoolean)
-//                            .build())
                     .field(GraphQLFieldDefinition
-                            .newFieldDefinition().name("version")
-                            .description("version")
-                            .type(Scalars.GraphQLInt)
-                            .build())  
+                            .newFieldDefinition().name("deviceSystemVersion")
+                            .description("设备系统版本")
+                            .type(Scalars.GraphQLString)
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("maidenStartTime")
+                            .description("第一次使用时间")
+                            .type(Scalars.GraphQLString)
+                            .dataFetcher(environment ->  {
+								Device device = environment.getSource();
+								DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+								return sdf.format(device.getMaidenStartTime());
+							} )
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("maidenStartIp")
+                            .description("第一次使用的ip")
+                            .type(Scalars.GraphQLString)
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("maidenStartLongitude")
+                            .description("第一次使用的经度")
+                            .type(Scalars.GraphQLBigDecimal)
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("maidenStartLatitude")
+                            .description("第一次使用的纬度")
+                            .type(Scalars.GraphQLBigDecimal)
+                            .build())
                     .field(GraphQLFieldDefinition
                             .newFieldDefinition().name("channelId")
-                            .description("channelId")
+                            .description("渠道id")
                             .type(Scalars.GraphQLLong)
-                            .build())  
+                            .build())
                     .field(GraphQLFieldDefinition
-                          .newFieldDefinition().name("recordDate")
-                          .description("记录时间")
-                          .type(Scalars.GraphQLString)
-                          .dataFetcher(environment ->  {
-                              Device source = environment.getSource();
-                              DateTime dateTime = new DateTime(source.getRecordDate());
-                              String date = dateTime.toString("yyyy-MM-dd");
-                              return date;
-                          })
-                          .build())
-//                    .field(GraphQLFieldDefinition
-//                            .newFieldDefinition().name("packageName")
-//                            .description("packageName")
-//                            .type(Scalars.GraphQLString)
-//                            .build())  
-//                    .field(GraphQLFieldDefinition.newFieldDefinition()
-//                            .name("longitude")
-//                            .description("该时刻的经度")
-//                            .type(Scalars.GraphQLFloat)
-//                            .build())
-//                    .field(GraphQLFieldDefinition.newFieldDefinition()
-//                            .name("latitude")
-//                            .description("该时刻的纬度")
-//                            .type(Scalars.GraphQLFloat)
-//                            .build())
-//                    .field(GraphQLFieldDefinition
-//                            .newFieldDefinition().name("geoInfo")
-//                            .description("geoInfo")
-//                            .type(Scalars.GraphQLString)
-//                            .build())  
-
+                            .newFieldDefinition().name("channelName")
+                            .description("渠道名")
+                            .type(Scalars.GraphQLString)
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("appProductId")
+                            .description("APP产品id")
+                            .type(Scalars.GraphQLLong)
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("appProductName")
+                            .description("APP产品名")
+                            .type(Scalars.GraphQLString)
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("appProductVersion")
+                            .description("APP版本号")
+                            .type(Scalars.GraphQLString)
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("isRoot")
+                            .description("是否越狱/ROOT")
+                            .type(Scalars.GraphQLBoolean)
+                            .build())
+                    .field(GraphQLFieldDefinition
+                            .newFieldDefinition().name("createdAt")
+                            .description("记录时间")
+                            .type(Scalars.GraphQLString)
+                            .dataFetcher(environment ->  {
+                            	Device device = environment.getSource();
+								DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+								return sdf.format(device.getCreatedAt());
+							} )
+                            .build())
                     .build();
         }
         return type;
     }
-    
-//    public static GraphQLFieldDefinition getListQueryField() {
-//        if(listQueryField == null) {
-//            listQueryField = GraphQLFieldDefinition.newFieldDefinition()
-//                    .argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
-//                    .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
-//                    .name("statistics")
-//                    .description("埋点统计列表")
-//                    .type(PageType.getPageTypeBuidler(getType()).name("StatisticPage").description("埋点统计类型分页").build())
-//                    .dataFetcher(environment ->  {
-//                        PageHelper.startPage(environment.getArgument("pageNumber"),
-//                                environment.getArgument("pageSize"));
-//                        List<Statistic> list = statisticMapper.selectByExample(null);
-//                        return list;
-//                    } ).build();
-//        }
-//        return listQueryField;
-//    }
-    
-    /**
-     * 已完成
-     * @return
-     */
-    public static GraphQLFieldDefinition getNewDeviceListQueryField() {
-        if(newDeviceListQueryField == null) {
-            newDeviceListQueryField = GraphQLFieldDefinition.newFieldDefinition()
-                    .argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
-                    .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
-                    .argument(GraphQLArgument.newArgument().name("id").type(Scalars.GraphQLLong).build())
-                    .name("newDeviceStatistics")
-                    .description("埋点统计列表")
-                    .type(PageType.getPageTypeBuidler(getType()).name("DevicePage").description("埋点统计类型分页").build())
-                    .dataFetcher(environment ->  {
-                        PageHelper.startPage(environment.getArgument("pageNumber"),
-                                environment.getArgument("pageSize"));
-                        Long id = environment.getArgument("id");
-                        Statistic st = statisticMapper.selectByPrimaryKey(id);
-                        Date startDate = st.getRecordDate();
-                        Date endDate = new DateTime(st.getRecordDate()).plusDays(1).toDate();
-                        DeviceExample example = new DeviceExample();
-                        example.createCriteria().andRecordDateBetween(startDate, endDate);
-                        List<Device> list = deviceMapper.selectByExample(example);
-                        return list;
+	
+	public static GraphQLFieldDefinition getListQueryField() {
+        if(listQueryField == null) {
+            listQueryField = GraphQLFieldDefinition.newFieldDefinition()
+                    .name("device")
+                    .argument(GraphQLArgument.newArgument().name("dailyId").type(Scalars.GraphQLLong).build())
+                    .argument(GraphQLArgument.newArgument().name("timeId").type(Scalars.GraphQLLong).build())
+					.argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
+					.argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
+					.description("设备登记信息")
+                    .type(PageType.getPageTypeBuidler(getType())
+							.name("DevicePage").description("设备登记信息分页").build())
+					.dataFetcher(environment ->  {
+						DeviceExample deviceExample = new DeviceExample();
+						Criteria criteria = deviceExample.createCriteria();
+	                	Long dailyId = environment.getArgument("dailyId");
+	                	if (dailyId != null) {
+	                		DeviceStatisticDaily deviceStatisticDaily = deviceStatisticDailyMapper.selectByPrimaryKey(dailyId);
+	                		Date startDate = deviceStatisticDaily.getStatisticDate();
+	                		Calendar c = Calendar.getInstance();
+	                        c.setTime(startDate);
+	                        c.add(Calendar.DAY_OF_MONTH, 1);// +1天
+	                        Date endDate = c.getTime();
+	                		criteria.andMaidenStartTimeBetween(startDate, endDate);
+	                		criteria.andChannelIdEqualTo(deviceStatisticDaily.getChannelId());
+	                		criteria.andAppProductIdEqualTo(deviceStatisticDaily.getAppProductId());
+	                	}
+	                	Long timeId = environment.getArgument("timeId");
+	                	if (timeId != null) {
+	                		DeviceStatisticTime deviceStatisticTime = deviceStatisticTimeMapper.selectByPrimaryKey(timeId);
+	                		Date startDate = deviceStatisticTime.getStatisticTime();
+	                		Calendar c = Calendar.getInstance();
+	                        c.setTime(startDate);
+	                        c.add(Calendar.HOUR, 2);// +2小时
+	                        Date endDate = c.getTime();
+	                		criteria.andMaidenStartTimeBetween(startDate, endDate);
+	                	}
+						PageHelper.startPage(environment.getArgument("pageNumber"), environment.getArgument("pageSize"));
+                        return deviceMapper.selectByExample(deviceExample);
                     } ).build();
         }
-        return newDeviceListQueryField;
+        return listQueryField;
     }
-   
-    
-   
-//    
-//    public static GraphQLFieldDefinition getTotalProductVisitListQueryField() {
-//        if(totalProductVisitListQueryField == null) {
-//            totalProductVisitListQueryField = GraphQLFieldDefinition.newFieldDefinition()
-//                    .argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
-//                    .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
-//                    .argument(GraphQLArgument.newArgument().name("id").type(Scalars.GraphQLLong).build())
-//                    .name("totalProductVisitStatistics")
-//                    .description("埋点统计列表")
-//                    .type(PageType.getPageTypeBuidler(getType()).name("totalProductVisitStatisticPage").description("埋点统计类型分页").build())
-//                    .dataFetcher(environment ->  {
-//                        PageHelper.startPage(environment.getArgument("pageNumber"),
-//                                environment.getArgument("pageSize"));
-//                        Long id = environment.getArgument("id");
-//                        Statistic st = statisticMapper.selectByPrimaryKey(id);
-//                        Date startDate = st.getRecordDate();
-//                        Date endDate = new DateTime(st.getRecordDate()).plusDays(1).toDate();
-//                        
-//                        DeviceLogExample example = new DeviceLogExample();
-//                        example.createCriteria().andCreatedAtBetween(startDate, endDate).andPIdIsNotNull();
-//                        List<DeviceLog> list = deviceMapper.selectByExample(example);
-//                        return list;
-//                    } ).build();
-//        }
-//        return totalProductVisitListQueryField;
-//    }
-//    
-//    public static GraphQLFieldDefinition getTotalProductVisitUserListQueryField() {
-//        if(totalProductVisitUserListQueryField == null) {
-//            totalProductVisitUserListQueryField = GraphQLFieldDefinition.newFieldDefinition()
-//                    .argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
-//                    .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
-//                    .argument(GraphQLArgument.newArgument().name("id").type(Scalars.GraphQLLong).build())
-//                    .name("totalProductUserVisitStatistics")
-//                    .description("埋点统计列表")
-//                    .type(PageType.getPageTypeBuidler(getType()).name("totalProductUserVisitStatisticPage").description("埋点统计类型分页").build())
-//                    .dataFetcher(environment ->  {
-//                        PageHelper.startPage(environment.getArgument("pageNumber"),
-//                                environment.getArgument("pageSize"));
-//                        Long id = environment.getArgument("id");
-//                        Statistic st = statisticMapper.selectByPrimaryKey(id);
-//                        Date startDate = st.getRecordDate();
-//                        Date endDate = new DateTime(st.getRecordDate()).plusDays(1).toDate();
-//                        List<Device> list = deviceMapper.getAllProductVisitUserDataList(startDate, endDate);
-//                        return list;
-//                    } ).build();
-//        }
-//        return totalProductVisitUserListQueryField;
-//    }
-    
+	
     @Autowired(required = true)
-    public void setDeviceMapper(DeviceMapper deviceMapper) {
-        DeviceType.deviceMapper = deviceMapper;
-    }
+	public void setDeviceMapper(DeviceMapper deviceMapper) {
+		DeviceType.deviceMapper = deviceMapper;
+	}
 
     @Autowired(required = true)
-    public void setStatisticMapper(StatisticMapper statisticMapper) {
-        DeviceType.statisticMapper = statisticMapper;
-    }
+	public void setDeviceStatisticDailyMapper(DeviceStatisticDailyMapper deviceStatisticDailyMapper) {
+		DeviceType.deviceStatisticDailyMapper = deviceStatisticDailyMapper;
+	}
 
     @Autowired(required = true)
-    public  void setUserMapper(UserMapper userMapper) {
-        DeviceType.userMapper = userMapper;
-    }
-
-    @Autowired(required = true)
-    public  void setDeviceLogMapper(DeviceLogMapper deviceLogMapper) {
-        DeviceType.deviceLogMapper = deviceLogMapper;
-    }
+	public void setDeviceStatisticTimeMapper(DeviceStatisticTimeMapper deviceStatisticTimeMapper) {
+		DeviceType.deviceStatisticTimeMapper = deviceStatisticTimeMapper;
+	}
+	
     
+	
 }
