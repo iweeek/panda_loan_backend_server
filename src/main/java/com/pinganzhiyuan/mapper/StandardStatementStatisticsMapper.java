@@ -120,11 +120,11 @@ public interface StandardStatementStatisticsMapper {
     	"on a.user_id = b.id \n" +
     	"where date(b.created_at) = date(#{date}) \n" +
     	"and a.channel_id = #{channelId,jdbcType=BIGINT} and a.version = #{version,jdbcType=INTEGER} GROUP BY a.user_id) as d"})
-    @ResultMap("com.pinganzhiyuan.mapper.StandardStatementStatisticsMapper.ResultOfInteger")
+	@ResultMap("com.pinganzhiyuan.mapper.StandardStatementStatisticsMapper.ResultOfInteger")
 	List<Integer> selectNewUserCountByPackageNameDateChannelIdAndVersion(
 			@Param("packageName") String packageName,@Param("date") Date date,@Param("channelId") Long channelId,@Param("version") int version);
     
-    @Select({ "select count(*) as countNumber from (\n" +
+    /*@Select({ "select count(*) as countNumber from (\n" +
     	"select d.* from device_log as d join (\n" + 
     	"select a.* from device_log as a join user as b \n" +
     	"on a.user_id = b.id \n" + 
@@ -136,7 +136,23 @@ public interface StandardStatementStatisticsMapper {
     	"where date(b.created_at) = date(#{date}) \n" +
     	"and a.channel_id = #{channelId,jdbcType=BIGINT} and a.version = #{version,jdbcType=INTEGER} \n" +
     	"GROUP BY a.user_id) as c on c.user_id = d.user_id where d.is_webview = 1 GROUP BY d.user_id,d.p_id ) as e" })
-    @ResultMap("com.pinganzhiyuan.mapper.StandardStatementStatisticsMapper.ResultOfInteger")
+    */
+	
+	@Select({ "select count(*) as countNumber from (\n" +
+			"select * from (\n" +
+			"select a.* from device_log a join user b \n" +
+			"on a.user_id = b.id \n" +
+			"where date(b.created_at) = date(#{date}) and is_webview = 1\n" +
+			"and a.package_name = #{packageName,jdbcType=VARCHAR} GROUP BY a.user_id,a.p_id) c\n" +
+			"where date(created_at) = date(#{date})\n" +
+			"union\n" +
+			"select * from(\n" +
+			"select a.* from device_log a join user b \n" +
+			"on a.user_id = b.id \n" +
+			"where date(b.created_at) = date(#{date}) and is_webview = 1\n" +
+			"and a.channel_id = #{channelId,jdbcType=BIGINT} and a.version = #{version,jdbcType=INTEGER} GROUP BY a.user_id,a.p_id) d\n" +
+			"where date(created_at) = date(#{date})) e"})
+	@ResultMap("com.pinganzhiyuan.mapper.StandardStatementStatisticsMapper.ResultOfInteger")
 	Integer selectNewUserProductUvCountByPackageNameDateChannelIdAndVersion(
 			@Param("packageName") String packageName,@Param("date") Date date,@Param("channelId") Long channelId,@Param("version") int version);
     
@@ -188,12 +204,12 @@ public interface StandardStatementStatisticsMapper {
 			@Param("packageName") String packageName,@Param("date") Date date,@Param("channelId") Long channelId,@Param("version") int version);
     
     @Select({ "select count(*) as countNumber from (\n" +
-    		"select * from device_log where is_webview = 1 and user_id > 0 and \n" +
-    		"date(created_at) =  date(#{date}) and package_name = #{packageName,jdbcType=VARCHAR} GROUP BY user_id,p_id \n" +
+    		"select a.* from device_log a join user b on a.user_id = b.id where is_webview = 1 and user_id > 0 and \n" +
+    		"date(a.created_at) =  date(#{date}) and package_name = #{packageName,jdbcType=VARCHAR} GROUP BY user_id,p_id \n" +
     		"UNION\n" +
-    		"select * from device_log where is_webview = 1 and user_id > 0 and \n" +
-    		"date(created_at) =  date(#{date}) and channel_id = #{channelId,jdbcType=BIGINT} and version = #{version,jdbcType=INTEGER} GROUP BY user_id,p_id \n" +
-    		") a" })
+    		"select a.* from device_log a join user b on a.user_id = b.id where is_webview = 1 and user_id > 0 and \n" +
+    		"date(a.created_at) =  date(#{date}) and channel_id = #{channelId,jdbcType=BIGINT} and version = #{version,jdbcType=INTEGER} GROUP BY user_id,p_id \n" +
+    		") c" })
     @ResultMap("com.pinganzhiyuan.mapper.StandardStatementStatisticsMapper.ResultOfInteger")	
 	Integer selectAllProductUvCountByPackageNameDateChannelIdAndVersion(
 			@Param("packageName") String packageName,@Param("date") Date date,@Param("channelId") Long channelId,@Param("version") int version);

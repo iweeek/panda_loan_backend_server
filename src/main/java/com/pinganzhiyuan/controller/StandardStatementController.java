@@ -57,7 +57,7 @@ public class StandardStatementController {
 			String appProductName = "熊猫贷款"; 
 			String packageName="com.mg.pandaloan";
 			Long channelId = 13L;
-			int version = 1;
+			int version = 11;
 			standardStatementService.createStandardStatement(date,appProductName,packageName,channelId,version);        
 		}
 		return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(null); 
@@ -99,7 +99,6 @@ public class StandardStatementController {
 	@ApiOperation(value = "定时任务测试", notes = "定时任务测试")
     @RequestMapping(value = { "/start" }, method = RequestMethod.POST)
     public ResponseEntity<?> job() {
-		//取所有日志信息
 		newDailyStatisticTask.statisticDevice();
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(null); 
     }

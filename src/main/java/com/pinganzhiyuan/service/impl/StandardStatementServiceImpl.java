@@ -68,6 +68,9 @@ public class StandardStatementServiceImpl implements StandardStatementService {
 		}
 		System.out.println(standardStatementStatistics.getActiveUserCount());
 		
+		
+		
+		/////66666
 		standardStatementStatistics.setAllProductUvCount(
 				standardStatementaMapper
 				.selectAllProductUvCountByPackageNameDateChannelIdAndVersion(packageName,date,channelId,version)
