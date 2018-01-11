@@ -41,7 +41,7 @@ public class NewHourlyStatisticTask {
 	private LogInService logInService;
 	
 
-	@Scheduled(cron = "0 2 15 * * ?")
+	//@Scheduled(cron = "0 1 1 * * ?")
 	public void job(){
 		//根据当前时间截取任务开始时间和结束时间
 		Date date = new Date();

@@ -28,7 +28,7 @@ import com.pinganzhiyuan.service.LogInService;
 import com.pinganzhiyuan.service.UserService;
 
 @Component
-public class HourlyStatisticTask {
+public class NewDailyStatisticTask {
 
 	@Autowired
 	private DeviceService deviceService;
@@ -53,8 +53,6 @@ public class HourlyStatisticTask {
 	
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
-	
-	@Scheduled(cron = "0 56 10 * * ?")
 	public void statisticDevice() {
 		System.out.println("开始了");
 		DateTime yesterday = new DateTime().withMillisOfDay(0).minusDays(1);
@@ -65,7 +63,7 @@ public class HourlyStatisticTask {
         //设备登记表
         System.out.println(1);
         List<DeviceLog> deviceLogs = deviceLogMapper.selectByDateGroupByDeviceId(startDate, endDate);
-        deviceService.createDeviceData(deviceLogs);
+        deviceService.createDeviceData(deviceLogs);//根据device_id判断是否存在再插入
         //日新增设备统计数据
         System.out.println(2);
         deviceService.deviceStatisticDaily(startDate, endDate);
@@ -78,7 +76,6 @@ public class HourlyStatisticTask {
             c.setTime(stageStartDate);
             c.add(Calendar.HOUR, 2);// +2小时 
             stageEndDate = c.getTime();
-            System.out.println(sdf.format(stageEndDate) + sdf.format(stageStartDate));
             deviceService.deviceStatisticTime(
             		Timestamp.valueOf(sdf.format(stageStartDate)),Timestamp.valueOf(sdf.format(stageEndDate)));
             stageStartDate = stageEndDate;

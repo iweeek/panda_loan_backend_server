@@ -239,5 +239,17 @@
       <columnOverride column="is_request_register" javaType="java.lang.Boolean"/>
       <ignoreColumn column="updated_at"/>
     </table>
+    
+    <table schema="panda_loan" tableName="standard_statement_statistics" domainObjectName="StandardStatementStatistics">
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+    
+    <table schema="panda_loan" tableName="product_view" domainObjectName="ProductView">
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
   </context>
 </generatorConfiguration>

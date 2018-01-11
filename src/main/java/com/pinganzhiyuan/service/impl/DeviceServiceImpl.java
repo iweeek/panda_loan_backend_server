@@ -153,14 +153,19 @@ public class DeviceServiceImpl implements DeviceService {
 				ClientVersionExample clientVersionExample = new ClientVersionExample();
 				Criteria criteria = clientVersionExample.createCriteria();
 				criteria.andChannelIdEqualTo(deviceLog.getChannelId());
-				criteria.andPackageNameEqualTo(deviceLog.getPackageName());//有包名根据包名和渠道id取
-
+				if (deviceLog.getPackageName() == null) {
+					System.out.println("空的");
+				}
+				if (deviceLog.getPackageName() != null) {
+					criteria.andPackageNameEqualTo(deviceLog.getPackageName());//有包名根据包名和渠道id取
+				}
+				
 				ClientVersionExample clientVersionExampleNoPackageName = new ClientVersionExample();
 				Criteria criteriaNoPackageName = clientVersionExampleNoPackageName.createCriteria();
 				criteriaNoPackageName.andChannelIdEqualTo(deviceLog.getChannelId());
 				criteriaNoPackageName.andVersionCodeEqualTo(deviceLog.getVersion());//无包名根据version_code和渠道id取
 							
-				if (clientVersionMapper.selectByExample(clientVersionExample).size() != 0) {
+				if (clientVersionMapper.selectByExample(clientVersionExample).size() != 0 && deviceLog.getPackageName() != null) {
 					ClientVersion clientVersion = clientVersionMapper.selectByExample(clientVersionExample).get(0);
 					device.setAppProductId(clientVersion.getId());
 					device.setAppProductName(clientVersion.getName());
