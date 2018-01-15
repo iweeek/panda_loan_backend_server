@@ -114,8 +114,8 @@ public class TokenRealm extends AuthorizingRealm{
 	        user = userService.findUser(username);
 	        if (user != null) {
 //	             String result = MessageDigestUtil.Md5(user.getPassword() + token.getSalt());
-	             String result = MessageDigestUtil.Md5(user.getPassword());
-	             SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(user, result, getName());
+//	             String result = MessageDigestUtil.Md5(user.getPassword());
+	             SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(user, user.getPassword(), getName());
 	             SecurityUtils.getSubject().getSession().setAttribute("user", user);
 	             return simpleAuthenticationInfo;
 	        }

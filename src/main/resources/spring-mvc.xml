@@ -47,11 +47,18 @@
 	<mvc:resources mapping="/*" location="/" />
 
 	<!-- 跨域配置 -->
-	<mvc:cors>
+<!-- 	<mvc:cors>
     	<mvc:mapping path="/**"
     		allowed-methods="GET, PUT, POST, DELETE, OPTIONS"/>
-	</mvc:cors>
-
+	</mvc:cors> -->
+   <mvc:cors>  
+        <mvc:mapping path="/**"
+            allowed-origins="*"
+            allowed-methods="POST, GET, OPTIONS, DELETE, PUT"
+            allowed-headers="Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, Access-Control-Allow-Origin"
+            allow-credentials="true" />
+    </mvc:cors>
+    
 	<context:annotation-config />
 	
 	<!-- 拦截器 -->
@@ -60,11 +67,12 @@
     <!-- 定义在mvc:interceptor下面的表示是对特定的请求才进行拦截的 -->
         <mvc:interceptor>
             <mvc:mapping path="/graphql/**"/>
-            <mvc:mapping path="/**"/>
+            <!-- <mvc:mapping path="/**"/> -->
+            <mvc:exclude-mapping path="/tokens/**"/>
             <bean class="com.pinganzhiyuan.interceptor.DeviceInterceptor"></bean>
         </mvc:interceptor>
     </mvc:interceptors> 
-    
+
     <!-- 开启这个配置，spring才能识别@Scheduled注解 -->
     <task:annotation-driven scheduler="myScheduler"/>
     <task:scheduler id="myScheduler" pool-size="10"/>

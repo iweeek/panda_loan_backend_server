@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.pinganzhiyuan.mapper.PermissionMapper;
 import com.pinganzhiyuan.mapper.RoleMapper;
-import com.pinganzhiyuan.model.Permission;
 import com.pinganzhiyuan.model.Role;
 import com.pinganzhiyuan.model.RoleExample;
 import com.pinganzhiyuan.service.RoleService;
@@ -31,7 +30,6 @@ public class RoleServiceImpl implements RoleService{
         int ret = roleMapper.updateByPrimaryKeySelective(role);
         return ret;
     }
-    @RequiresPermissions("s")
     @Override
     public int delete(Long id) {
         int ret = roleMapper.deleteByPrimaryKey(id);
