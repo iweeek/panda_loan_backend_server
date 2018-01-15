@@ -1,9 +1,6 @@
 package com.pinganzhiyuan.service;
 
-import javax.servlet.http.HttpSession;
-
 import com.pinganzhiyuan.util.ResponseBody;
-
 
 /**
 * token service interface.
@@ -12,18 +9,17 @@ import com.pinganzhiyuan.util.ResponseBody;
 * @date 2017年5月22日
 */
 public interface TokenService {
-    
-    /**
-    * 验证用户名和密码，生成指定时限token.
-    * 
-    * @param username 用户名
-    * @param password 密码
-     * @param salt 
-    * @param expiredHour 过期时间(小时)
-    * @return token传输对象
-    */
-    @SuppressWarnings("rawtypes")
-    int create(String username, String password, String salt, int expiredHour, ResponseBody body,
-            HttpSession httpSession);
-    
+	
+	/**
+	* 验证用户名和密码，生成指定时限token.
+	* 
+	* @param username 用户名
+	* @param password 密码
+	* @param expiredHour 过期时间(小时)
+	* @return token传输对象
+	*/
+	@SuppressWarnings("rawtypes")
+	int create(long universityId, String username, String password, int expiredHour, String deviceId, String userAgent, ResponseBody resBody);
+	
+
 }
