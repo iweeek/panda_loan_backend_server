@@ -26,7 +26,7 @@ public class LogInController {
 
 	@Autowired
 	private DeviceLogMapper deviceLogMapper;
-	
+	 
 	@ApiOperation(value = "生成新的用户画像表信息", notes = "生成新的用户画像信息")
     @RequestMapping(value = { "/createLogInStatisticDaily" }, method = RequestMethod.POST)
     public ResponseEntity<?> create() {

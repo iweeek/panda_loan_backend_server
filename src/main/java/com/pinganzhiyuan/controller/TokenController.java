@@ -47,8 +47,10 @@ public class TokenController {
     @SuppressWarnings("rawtypes")
     @ApiOperation(value = "创建token", notes = "验证用户名与密码，为用户创建一个用于鉴权的Token")
     @RequestMapping(value = { "/tokens" }, method = RequestMethod.POST)
-    public ResponseEntity<?> create(@ApiParam("用户名（电话号码）") @RequestParam String username, @ApiParam("图形验证码的key")@RequestParam(required = false) String keyImageCapt,
-            @ApiParam("图形验证码")@RequestParam(required = false) String imageCapt, @ApiParam("短信验证码的key")@RequestParam String keySMSCapt,
+    public ResponseEntity<?> create(@ApiParam("用户名（电话号码）") @RequestParam String username, 
+            @ApiParam("图形验证码的key")@RequestParam(required = false) String keyImageCapt,
+            @ApiParam("图形验证码")@RequestParam(required = false) String imageCapt, 
+            @ApiParam("短信验证码的key")@RequestParam String keySMSCapt,
             @ApiParam("短信验证码")@RequestParam String smsCapt) {
         
         Boolean isPassed = false;
