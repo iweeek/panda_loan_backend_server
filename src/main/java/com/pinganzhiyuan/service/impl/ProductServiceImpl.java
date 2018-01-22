@@ -165,26 +165,17 @@ public class ProductServiceImpl implements ProductService {
 		ProductExample example = new ProductExample();
 		example.createCriteria().andIdNotEqualTo(0l);
 		
-		List<Product> total = productMapper.selectByExample(example);
 		PageHelper.startPage(pageNumber, pageSize);
-		List<Product> list = productMapper.selectByExample(example);
+		productList = productMapper.selectByExample(example);
 		
-		if (list.size() > 0) {
-			productList.addAll(list);
+		if (productList.size() > 0) {
 			
 			logMsg = RetMsgTemplate.MSG_TEMPLATE_OPERATION_OK;
 			logger.info(logMsg);
 			
 			resBody.statusMsg = logMsg;
-			
-			PageEntity<List<Product>> pageEntity = new PageEntity<>();
-	        pageEntity.setPageSize(pageSize);
-	        pageEntity.setPageNumber(pageNumber);
-	        pageEntity.setPagesCount(total.size() / pageSize);
-	        pageEntity.setData(productList);
-	        pageEntity.setDataCount(total.size());
-	        
-			resBody.obj1 = pageEntity;
+	        PageInfo<Product> pageInfo = new PageInfo<>(productList);
+			resBody.obj1 = pageInfo;
 			
 			return HttpServletResponse.SC_OK;
 		} else {

@@ -267,28 +267,6 @@ public class ProductController {
         return ResponseEntity.status(status).body(resBody); 
     }
     
-//    @SuppressWarnings("rawtypes")
-//    @ApiOperation(value = "获取产品列表", notes = "")
-//    @RequestMapping(value = "/products", method = RequestMethod.GET, produces="application/json;charset=UTF-8") 
-//    public ResponseEntity<?> index(HttpServletResponse response) {
-//        List<Product> list = new ArrayList<Product>();
-//        
-//        ResponseBody resBody = new ResponseBody<Product>();
-//        
-//        int status = productService.index(list, resBody);
-//        
-//        return ResponseEntity.status(status).body(resBody); 
-//    }
-//    
-    
-    public static void main(String[] args) throws ParseException {
-        Long d = new Long(1516606420000l);
-        Date date = new Date(d);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date2 = format.parse("0000-00-00 00:00:00");
-        System.out.println(new Date());
-    }
-    
     @SuppressWarnings("rawtypes")
     @ApiOperation(value = "获取产品列表", notes = "")
     @RequestMapping(value = "/products", method = RequestMethod.GET, produces="application/json;charset=UTF-8") 
