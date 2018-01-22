@@ -13,7 +13,7 @@
  
   <context id="pinganzhiyuan" targetRuntime="MyBatis3">
     <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-        connectionURL="jdbc:mysql://119.23.12.36:3306/panda_loan"
+        connectionURL="jdbc:mysql://119.23.12.36:3306/panda_loan_dev"
         userId="panda_loan"
         password="panda!QAZ">
     </jdbcConnection>
@@ -47,6 +47,12 @@
     <table schema="panda_loan" tableName="user" domainObjectName ="User" >
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
       <columnOverride column="is_man" javaType="java.lang.Boolean"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+    
+    <table schema="panda_loan" tableName="user_backend" domainObjectName ="UserBackend" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
     </table>
 

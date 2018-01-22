@@ -1,95 +1,61 @@
 package com.pinganzhiyuan.controller;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pinganzhiyuan.mapper.CaptchaMapper;
-import com.pinganzhiyuan.mapper.UserMapper;
-import com.pinganzhiyuan.model.Captcha;
-import com.pinganzhiyuan.model.User;
-import com.pinganzhiyuan.model.UserExample;
-import com.pinganzhiyuan.service.CaptchaService;
 import com.pinganzhiyuan.service.TokenService;
 import com.pinganzhiyuan.util.ResponseBody;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
-
+/**
+* token资源的restful控制器
+* 
+* @author x1ny
+* @date 2017年5月22日
+*/
+@Api(tags = "Token相关接口")
 @RestController
 public class TokenController {
-    
-    @Autowired
-    private TokenService tokenService;
-    
-    @Autowired
-    private CaptchaService captchaService;
-    
-    @Autowired
-    CaptchaMapper captchaMapper;
-    
-    @Autowired
-    UserMapper userMapper;
-    
-    @SuppressWarnings("rawtypes")
-    @ApiOperation(value = "创建token", notes = "验证用户名与密码，为用户创建一个用于鉴权的Token")
-    @RequestMapping(value = { "/tokens" }, method = RequestMethod.POST)
-    public ResponseEntity<?> create(@ApiParam("用户名（电话号码）") @RequestParam String username, 
-            @ApiParam("图形验证码的key")@RequestParam(required = false) String keyImageCapt,
-            @ApiParam("图形验证码")@RequestParam(required = false) String imageCapt, 
-            @ApiParam("短信验证码的key")@RequestParam String keySMSCapt,
-            @ApiParam("短信验证码")@RequestParam String smsCapt) {
-        
-        Boolean isPassed = false;
-        
-        ResponseBody resBody = new ResponseBody<String>();
-        
-        String msg;
-        
-        if (imageCapt != null && keyImageCapt != null) { 
-            isPassed = captchaService.verifyCaptcha(imageCapt, keyImageCapt);
-            if (!isPassed) {
-                resBody.statusMsg = "图形验证码不正确";
-                return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(resBody);
-            }
-        }
-        
-        isPassed = captchaService.verifyCaptcha(smsCapt, keySMSCapt);
-        if (isPassed) {
-            UserExample example = new UserExample();
-            example.createCriteria().andUsernameEqualTo(username);
-            List<User> list = userMapper.selectByExample(example);
-            if (list.size() > 0) {
-                resBody.statusMsg = "登录成功";
-                resBody.obj1 = list.get(0);
-                return ResponseEntity.status(HttpServletResponse.SC_OK).body(resBody);
-            }
-           
-            User user = new User();
-            user.setUsername(username);
-            user.setPassword("");
-            user.setRegistTime((new Date()).getTime());
-            userMapper.insert(user);
-            
-            resBody.statusMsg = "登录成功";
-            resBody.obj1 = user;
-            return ResponseEntity.status(HttpServletResponse.SC_OK).body(resBody);
-        } else {
-            resBody.statusMsg = "短信验证码不正确";
-            return ResponseEntity.status(HttpServletResponse.SC_FORBIDDEN).body(resBody);
-        }
-    }
+	
+//	private int status = 0;
+
+	@Autowired
+	private TokenService tokenService;
+	
+	/**
+	* 验证username和password，创建token
+	* 
+	* @param username 用户名
+	* @param password 密码
+	* @param expiredHour 过期时间(小时)
+	*/
+	@SuppressWarnings("rawtypes")
+	@ApiOperation(value = "创建token", notes = "验证用户名与密码，为用户创建一个用于鉴权的Token")
+	@RequestMapping(value="/tokens", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
+	public ResponseEntity<?> create(
+								@ApiParam("用户名")
+								@RequestParam String username,
+								@ApiParam("密码")
+								@RequestParam String password,
+//								@ApiParam("设备Id")
+//								@RequestParam String deviceId,
+								@ApiParam("有效时间(单位:小时)，不填则默认为1")
+								@RequestParam(required=false, defaultValue="1") Integer expiredHour,
+								@RequestHeader("User-Agent") String userAgent
+								) {
+		System.out.println(userAgent);
+		
+		ResponseBody resBody = new ResponseBody();
+		int status = tokenService.create(username, password, expiredHour, userAgent, resBody);
+		
+		return ResponseEntity.status(status).body(resBody);
+	}
 }
