@@ -55,6 +55,8 @@ dependencies {
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.4'
     compile group: 'org.apache.commons', name: 'commons-io', version: '1.3.2'
     compile group: 'com.github.pagehelper', name: 'pagehelper', version: '5.0.2'
+    compile group: 'org.apache.shiro', name: 'shiro-spring', version: '1.3.2'
+    compile group: 'org.apache.shiro', name: 'shiro-ehcache', version: '1.2.3'
 
     testCompile 'junit:junit:4.12'
     testCompile group: 'org.springframework', name: 'spring-test', version: '4.3.8.RELEASE'
