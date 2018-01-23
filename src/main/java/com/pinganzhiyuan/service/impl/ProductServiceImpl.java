@@ -1,6 +1,11 @@
 package com.pinganzhiyuan.service.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -54,7 +59,24 @@ public class ProductServiceImpl implements ProductService {
 			return HttpServletResponse.SC_CONFLICT;
 		} else {
 			productMapper.insertSelective(product);
-			
+			// 更新 URL
+			String url = product.getUrl();
+			// http://119.23.12.36:8081/panda_loan/record?pid=16&redirect=https%3a%2f%2f
+            Pattern p = Pattern.compile("pid=(.*?)&");//正则表达式，取; 和; 之间的字符串
+            Matcher m = p.matcher(url);
+            if (m.find()) {
+                int i = url.indexOf("pid=" + m.group(1));
+                String s1 = url.substring(0, i) + "pid=";
+                System.out.println(s1);
+                
+                String s2 = url.substring(s1.length() + m.group(1).length());
+                System.out.println(s2);
+                
+                StringBuilder sb = new StringBuilder();
+                sb.append(s1 + product.getId() + s2);
+                product.setUrl(sb.toString());
+                productMapper.updateByPrimaryKeySelective(product);
+            }
 			logMsg = RetMsgTemplate.MSG_TEMPLATE_OPERATION_OK;
 			logger.info(logMsg);
 			
@@ -65,6 +87,10 @@ public class ProductServiceImpl implements ProductService {
 		}
 	}
 
+	public static void main(String[] args) {
+        
+    }
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public int show(Product product, ResponseBody resBody) {
@@ -167,6 +193,20 @@ public class ProductServiceImpl implements ProductService {
 		
 		PageHelper.startPage(pageNumber, pageSize);
 		productList = productMapper.selectByExample(example);
+		// 处理 URL，截取最后真正的链接
+		for (Product product : productList) {
+		    String decodeUrl = "";
+	        Pattern p = Pattern.compile("redirect=(.*?)###");//正则表达式，取; 和; 之间的字符串  
+	        Matcher m = p.matcher(product.getUrl() + "###");
+	        if (m.find()) {
+    	            try {
+    	                decodeUrl = URLDecoder.decode(m.group(1), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+	        }
+	        product.setUrl(decodeUrl);
+		}
 		
 		if (productList.size() > 0) {
 			
@@ -188,4 +228,6 @@ public class ProductServiceImpl implements ProductService {
 			return HttpServletResponse.SC_NOT_FOUND;
 		}
 	}
+	
+	
 }
