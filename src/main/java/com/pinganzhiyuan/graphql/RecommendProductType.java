@@ -236,7 +236,7 @@ public class RecommendProductType {
                         
                         ProductExample example = new ProductExample();
                         Criteria criteria = example.createCriteria();
-                        criteria.andIsPublishedEqualTo(true);
+                        criteria.andIsPublishedEqualTo(1);
                         
                         if (productIdList.size() != 0) {
                             criteria.andIdIn(productIdList);

@@ -40,6 +40,7 @@
     <table schema="panda_loan" tableName="product" domainObjectName ="Product" >
       <generatedKey column="id" sqlStatement="MySql" identity="true" />
       <columnOverride column="is_new" javaType="java.lang.Boolean"/>
+      <columnOverride column="is_published" javaType="java.lang.Integer"/>
       <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
     </table>

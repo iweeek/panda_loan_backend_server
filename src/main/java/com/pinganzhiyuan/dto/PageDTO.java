@@ -1,6 +1,6 @@
-package com.pinganzhiyuan.util;
+package com.pinganzhiyuan.dto;
 
-public class PageEntity<T> {
+public class PageDTO<T> {
 
     public int pageNumber;
     public int pageSize;
