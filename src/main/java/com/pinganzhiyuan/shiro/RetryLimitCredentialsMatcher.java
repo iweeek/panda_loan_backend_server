@@ -54,7 +54,9 @@ public class RetryLimitCredentialsMatcher extends SimpleCredentialsMatcher {
             //clear retry data  
             System.out.println("清楚缓存。");
             lgoinRetryCache.remove(username);  
-        }  
-        return true;  
+            return true;  
+        } else {
+            return false;  
+        }
     }  
 }

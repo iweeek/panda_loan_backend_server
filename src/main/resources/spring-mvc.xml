@@ -42,7 +42,7 @@
 
 	<!-- 配置使用注解的包 -->
 	<context:component-scan base-package="com.pinganzhiyuan.*" />
-	<aop:config proxy-target-class="true"></aop:config>
+	<!-- <aop:config proxy-target-class="true"></aop:config> -->
 
 	<mvc:resources mapping="/*" location="/" />
 

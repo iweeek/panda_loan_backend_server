@@ -9,6 +9,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +43,7 @@ public class ProductController {
    
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
     
+    @RequiresPermissions("product:write")
     @SuppressWarnings("rawtypes")
     @ApiOperation(value = "创建一个产品", notes = "使用POST来创建一个新的产品，由服务端来分配创建一个新资源")
     @RequestMapping(value = "/products", method = RequestMethod.POST, produces="application/json;charset=UTF-8") 
@@ -221,6 +225,7 @@ public class ProductController {
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(imageUrl);
     }
     
+    @RequiresPermissions("product:read")
     @SuppressWarnings("rawtypes")
     @ApiOperation(value = "获取一个产品", notes = "根据Id来获取一个产品")
     @RequestMapping(value = "/products/{id}", method = RequestMethod.GET, produces="application/json;charset=UTF-8") 
@@ -237,6 +242,7 @@ public class ProductController {
         return ResponseEntity.status(status).body(resBody);
     }
     
+    @RequiresPermissions("product:write")
     @SuppressWarnings("rawtypes")
     @ApiOperation(value = "更新一个产品", notes = "根据Id来更新一个产品")
     @RequestMapping(value = "/products/{id}", method = RequestMethod.POST, produces="application/json;charset=UTF-8") 
@@ -407,6 +413,7 @@ public class ProductController {
         return ResponseEntity.status(status).body(resBody); 
     }
     
+    @RequiresPermissions("product:read")
     @SuppressWarnings("rawtypes")
     @ApiOperation(value = "获取产品列表", notes = "")
     @RequestMapping(value = "/products", method = RequestMethod.GET, produces="application/json;charset=UTF-8") 
@@ -424,10 +431,4 @@ public class ProductController {
         
         return ResponseEntity.status(status).body(resBody); 
     }
-    
-    public static void main(String[] args) throws UnsupportedEncodingException {
-        String encode = URLEncoder.encode("://", "UTF-8");
-        System.out.println(encode);
-    }
-    
 }

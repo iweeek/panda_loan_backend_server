@@ -22,7 +22,9 @@ public class UserBackendServiceImpl implements UserBackendService{
         example.createCriteria().andUsernameEqualTo(username);
         List<UserBackend> selectByExample = userBackendMapper.selectByExample(example);
         if (selectByExample != null) {
-            return selectByExample.get(0);
+            if (selectByExample.size() > 0) {
+                return selectByExample.get(0);
+            }
         }
         return null;
     }

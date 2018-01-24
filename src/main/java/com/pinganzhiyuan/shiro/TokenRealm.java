@@ -77,17 +77,16 @@ public class TokenRealm extends AuthorizingRealm{
 		    }
 		    roleIds.add(s);
 		}
-		System.out.println("roleIds: " + roleIds );
+		System.out.println("TokenRealm#doGetAuthorizationInfo roleIds: " + roleIds );
 		authorizationInfo.setRoles(roleIds);
 		
 		// 添加权限
-		
 		Set<String> resources = new HashSet<String>();
 		for(String roleId : roleIds.toArray(new String[0])) {
             Role role = roleService.read(Long.valueOf(roleId));
-            String privIds = role.getResourceIds();
-            System.out.println("privIds: " + privIds);
-            String[] split2 = privIds.split(",");
+            String resourceIds = role.getResourceIds();
+            System.out.println("resourceIds: " + resourceIds);
+            String[] split2 = resourceIds.split(",");
             for (String id : split2) {
                 if (StringUtils.isEmpty(id)) {
                     continue;
