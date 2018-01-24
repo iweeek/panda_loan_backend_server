@@ -7,7 +7,7 @@
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-	    <!-- Shiro的Web过滤器 -->
+	<!-- Shiro的Web过滤器 -->
     <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
         <property name="securityManager" ref="securityManager"/>
     </bean>
@@ -40,7 +40,7 @@
 		<property name="subjectFactory" ref="subjectFactory"/> 
 		<property name="subjectDAO.sessionStorageEvaluator.sessionStorageEnabled" value="true"/>
 		<!-- By default the servlet container sessions will be used. Uncomment 
-			this line to use shiro's native sessions (see the JavaDoc for more): -->
+			this line to use shiro's native sessions (see the JavaDoc for more) : http/native -->
 		<property name="sessionMode" value="http"/>
 	</bean>
 

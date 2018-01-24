@@ -1,5 +1,7 @@
 package com.pinganzhiyuan.service;
 
+import javax.servlet.http.HttpSession;
+
 import com.pinganzhiyuan.util.ResponseBody;
 
 /**
@@ -19,7 +21,8 @@ public interface TokenService {
 	* @return token传输对象
 	*/
 	@SuppressWarnings("rawtypes")
-    int create(String username, String password, Integer expiredHour, String userAgent, ResponseBody resBody);
+    int create(String username, String password, String salt, Integer expiredHour, String userAgent,
+            ResponseBody resBody, HttpSession httpSession);
 	
 
 }

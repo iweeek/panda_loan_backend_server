@@ -1,5 +1,7 @@
 package com.pinganzhiyuan.controller;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -45,16 +47,19 @@ public class TokenController {
 								@RequestParam String username,
 								@ApiParam("密码")
 								@RequestParam String password,
+								@ApiParam("盐值") 
+                                 @RequestParam String salt,
 //								@ApiParam("设备Id")
 //								@RequestParam String deviceId,
 								@ApiParam("有效时间(单位:小时)，不填则默认为1")
 								@RequestParam(required=false, defaultValue="1") Integer expiredHour,
-								@RequestHeader("User-Agent") String userAgent
+								@RequestHeader("User-Agent") String userAgent,
+								HttpSession httpSession
 								) {
 		System.out.println(userAgent);
 		
 		ResponseBody resBody = new ResponseBody();
-		int status = tokenService.create(username, password, expiredHour, userAgent, resBody);
+		int status = tokenService.create(username, password, salt, expiredHour, userAgent, resBody, httpSession);
 		
 		return ResponseEntity.status(status).body(resBody);
 	}
