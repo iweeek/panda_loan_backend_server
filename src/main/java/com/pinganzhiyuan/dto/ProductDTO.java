@@ -1,5 +1,7 @@
 package com.pinganzhiyuan.dto;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -594,6 +596,16 @@ public class ProductDTO {
     public void setDayRate(String dayRate) {
         this.dayRate = dayRate;
     }
+    
+    private String originUrl;
+
+    public String getOriginUrl() {
+        return originUrl;
+    }
+
+    public void setOriginUrl(String originUrl) {
+        this.originUrl = originUrl;
+    }
 
     public ProductDTO(Product product) {
         this.id = product.getId();
@@ -622,7 +634,26 @@ public class ProductDTO {
         this.description = product.getDescription();
         this.isPublished = product.getIsPublished();
         this.imgUrl = product.getImgUrl();
+        
         this.url = product.getUrl();
+        // 根据 url 返回
+//        redirect=
+        // 处理 URL，截取最后真正的链接
+//        for (Product product : productList) {
+            String decodeUrl = "";
+            Pattern p = Pattern.compile("redirect=(.*?)###");//正则表达式，取; 和; 之间的字符串  
+            Matcher m = p.matcher(product.getUrl() + "###");
+            if (m.find()) {
+                    try {
+                        decodeUrl = URLDecoder.decode(m.group(1), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+//            product.setUrl(decodeUrl);
+//        }
+        this.originUrl = decodeUrl;
+        
         this.weight = product.getWeight();
         this.lightTitle = product.getLightTitle();
         this.minAmount = product.getMinAmount();
@@ -639,5 +670,7 @@ public class ProductDTO {
         this.unpublishTime = product.getUnpublishTime();
         this.applyTimes = product.getApplyTimes();
         this.loanWaitTime = product.getLoanWaitTime();
+        
+        this.guarantees = new ArrayList<>();
     }
 }

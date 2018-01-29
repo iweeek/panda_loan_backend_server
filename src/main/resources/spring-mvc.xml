@@ -21,7 +21,8 @@
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd"
     	default-lazy-init="false">
 
-	<bean
+    <!-- 用于扫描其他的.properties配置文件 --> 
+	<bean id="propertyConfigurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<array>
@@ -30,7 +31,10 @@
 		</property>
 	</bean>
 
-	<!-- 启用注解配置 -->
+	<!-- 
+        启用注解配置 简写形式 自动注册DefaultAnnotationHandlerMapping与AnnotationMethodHandlerAdapter 两个bean 
+        @RequestMapping, @Controller
+    -->
 	<mvc:annotation-driven>
 		<!-- 解决@ReponseBody中文乱码问题 -->
 		<mvc:message-converters>
@@ -40,8 +44,19 @@
 		</mvc:message-converters>
 	</mvc:annotation-driven>
 
-	<!-- 配置使用注解的包 -->
+	<!-- 
+        配置扫描包路径 这个包含了 context:annotation-config 的功能。
+        因此可以把 context:annotation-config 移除掉。
+    -->
 	<context:component-scan base-package="com.pinganzhiyuan.*" />
+    <!-- 
+        简化形式，建议使用这个。
+        AutowiredAnnotationBeanPostProcessor @Autowired 
+        CommonAnnotationBeanPostProcessor @Resource @PostConstruct @PreDestroy
+        PersistenceAnnotationBeanPostProcessor @PersistenceContext
+        RequiredAnnotationBeanPostProcessor @Required
+    -->
+    <context:annotation-config />
 	<!-- <aop:config proxy-target-class="true"></aop:config> -->
 
 	<mvc:resources mapping="/*" location="/" />
@@ -52,8 +67,6 @@
     		allowed-methods="GET, PUT, POST, DELETE, OPTIONS"
         allowed-headers="*"/>
 	</mvc:cors>
- 
-	<context:annotation-config />
 	
 	<!-- 拦截器 -->
     <!-- 配置拦截器 -->
@@ -70,6 +83,7 @@
     <task:annotation-driven scheduler="myScheduler"/>
     <task:scheduler id="myScheduler" pool-size="10"/>
     
+    <!-- 图片上传所需 -->
     <bean id="multipartResolver"
           class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="defaultEncoding" value="UTF-8"/>

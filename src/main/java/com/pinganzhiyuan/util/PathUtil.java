@@ -24,6 +24,8 @@ public class PathUtil {
      */
     public String ORIGIN = "";
     
+    public String imagePath = "";
+    
     /**
      * 不能有默认的无参构造方法
      */
@@ -36,8 +38,13 @@ public class PathUtil {
 	public static final String WEBSERVER_PATH = System.getProperty("catalina.base");
 	public static final String WEBAPP_PATH  = WEBSERVER_PATH + File.separator +"webapps" + File.separator;
 	
-	public static final String IMG_FOLDER_PATH = "images_storage" + File.separator;
-	public static final String IMG_STORAGE_PATH = WEBAPP_PATH + File.separator + IMG_FOLDER_PATH + File.separator;
+	// tomcat
+	public static final String IMG_FOLDER_PATH = "image" + File.separator;
+	// nginx
+//	public static final String IMG_FOLDER_PATH = "";
+//	public static final String IMG_STORAGE_PATH = WEBAPP_PATH + File.separator + IMG_FOLDER_PATH + File.separator;
+//	public static final String IMG_STORAGE_PATH = "/Users/nimon/log" + File.separator + IMG_FOLDER_PATH + File.separator;
+	public static final String IMG_STORAGE_PATH = "/usr/local/webserver/nginx/html" + File.separator + IMG_FOLDER_PATH + File.separator;
 	
     public static final String CAPTCHA_FOLDER_PATH = "captcha_storage" + File.separator;
     public static final String CAPTCHA_STORAGE_PATH = WEBAPP_PATH + File.separator + CAPTCHA_FOLDER_PATH + File.separator;

@@ -31,6 +31,7 @@ public class FileUtil {
 
 		if (!file.exists()) {
 			file.createNewFile();
+			Runtime.getRuntime().exec("chmod o+r " + file.getAbsolutePath()); 
 		}
 
 		mFile.transferTo(file);

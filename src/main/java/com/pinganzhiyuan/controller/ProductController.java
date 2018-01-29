@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -23,11 +25,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.pinganzhiyuan.dto.PageDTO;
+import com.pinganzhiyuan.dto.ProductDTO;
 import com.pinganzhiyuan.mapper.GuaranteeMapper;
 import com.pinganzhiyuan.mapper.GuaranteeProductMappingMapper;
+import com.pinganzhiyuan.mapper.ProductMapper;
 import com.pinganzhiyuan.model.Guarantee;
 import com.pinganzhiyuan.model.GuaranteeProductMapping;
 import com.pinganzhiyuan.model.Product;
+import com.pinganzhiyuan.model.ProductExample;
 import com.pinganzhiyuan.service.ProductService;
 import com.pinganzhiyuan.util.FileUtil;
 import com.pinganzhiyuan.util.PathUtil;
@@ -44,6 +52,9 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+    
+    @Autowired
+    private ProductMapper productMapper;
     
     @Autowired
     private GuaranteeMapper guaranteeMapper;
@@ -99,7 +110,7 @@ public class ProductController {
                             @ApiParam("产品日利率")
                             @RequestParam String dayRate,
                             @ApiParam("借款资格")
-                            @RequestParam(name = "guarantees") String[] guarantees
+                            @RequestParam(name = "guarantees", required = false) String[] guarantees
 //                            @ApiParam("资方描述")
 //                            @RequestParam String lenderDesc,
 //                            @ApiParam("资方landing page页面中的获取验证码的地址")
@@ -116,7 +127,6 @@ public class ProductController {
 //                            @RequestParam(required = false, defaultValue = "0") Long chargeModeId,
 //                            @ApiParam("申请次数")
 //                            @RequestParam Integer applyTimes,
-//                            @ApiParam("放款等待时间")
 //                            @RequestParam Integer loanWaitTime
                             ) {
         
@@ -124,14 +134,18 @@ public class ProductController {
         
         if (title != null) {
             product.setTitle(title);
+        } else {
+            product.setTitle("");
         }
         if (isNew != null) {
             product.setIsNew(isNew);
+        } else {
+            product.setIsNew(false);
         }
         
         // 拼接标签
         StringBuilder sb = new StringBuilder();
-        if (firstTags.length > 0) {
+        if (firstTags != null && firstTags.length > 0) {
             for (String tag : firstTags) {
                 sb.append(tag + "|");
             }
@@ -164,11 +178,19 @@ public class ProductController {
 //        }
         if (description != null) {
             product.setDescription(description);
+        } else {
+            product.setDescription("");
         }
         
         product.setIsPublished(isPublished);
+        if (isPublished == 1) {
+            product.setPublishTime(new Date());
+        }
+        
         if (imgUrl != null) {
             product.setImgUrl(imgUrl);
+        } else {
+            product.setImgUrl("");
         }
         
         // 导向地址
@@ -193,15 +215,26 @@ public class ProductController {
         
         if (minAmount != null) {
             product.setMinAmount(minAmount);
+        } else {
+            product.setMinAmount(0);
         }
+        
         if (maxAmount != null) {
             product.setMaxAmount(maxAmount);
+        } else {
+            product.setMaxAmount(0);
         }
+        
         if (minTerm != null) {
             product.setMinTerm(minTerm);
+        } else {
+            product.setMinTerm(0);
         }
+        
         if (maxTerm != null) {
             product.setMaxTerm(maxTerm);
+        } else {
+            product.setMaxTerm(0);
         }
 //        if (lowInterest != null) {
             product.setLowInterest((double) 0);
@@ -214,6 +247,8 @@ public class ProductController {
         
         if (lenderName != null) {
             product.setLenderName(lenderName);
+        } else {
+            product.setLenderName("");
         }
      
         product.setLenderDesc("");
@@ -229,7 +264,6 @@ public class ProductController {
 //        } catch (ParseException e) {
 //            e.printStackTrace();
 //        }
-//       
         
         product.setDisplayType((byte) 0);
         product.setChargeModeId((long) 0);
@@ -245,7 +279,7 @@ public class ProductController {
         
         int status = productService.create(product, resBody);
         
-        if (guarantees != null) {
+        if (guarantees != null && guarantees.length != 0) {
             List<Guarantee> guaranteeList = guaranteeMapper.selectByExample(null);
             for (String lq : guarantees) {
                 for (Guarantee guarantee : guaranteeList) {
@@ -278,7 +312,7 @@ public class ProductController {
             e.printStackTrace();
             return null;
         }
-        imageUrl = PathUtil.getInstance().ORIGIN + File.separator + PathUtil.IMG_FOLDER_PATH + imagePath;
+        imageUrl = PathUtil.getInstance().ORIGIN + File.separator + imagePath;
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(imageUrl);
     }
     
@@ -307,65 +341,35 @@ public class ProductController {
                                     @ApiParam("id")
                                     @PathVariable long id,
                                     @ApiParam("主标题")
-                                    @RequestParam String title,
+                                    @RequestParam(required = false) String title,
                                     @ApiParam("对应客户端“新”标签")
-                                    @RequestParam Boolean isNew,
+                                    @RequestParam(required = false) Boolean isNew,
                                     @ApiParam("对应客户端第一行的标签")
-                                    @RequestParam(name = "firstTags") String[] firstTags,
-//                                    @ApiParam("对应客户端第二行的标签")
-//                                    @RequestParam(required = false, defaultValue = "") String secondTags,
+                                    @RequestParam(name = "firstTags", required = false) String[] firstTags,
                                     @ApiParam("产品的描述")
-                                    @RequestParam(required = false, defaultValue = "") String description,
+                                    @RequestParam(required = false) String description,
                                     @ApiParam("是否发布 0表示下线；1表示上线。")
-                                    @RequestParam Integer isPublished,
+                                    @RequestParam(required = false) Integer isPublished,
                                     @ApiParam("图片地址")
-                                    @RequestParam String imgUrl,
+                                    @RequestParam(required = false) String imgUrl,
                                     @ApiParam("导向的资方地址")
-                                    @RequestParam String url,
-//                                    @ApiParam("权重，用来对产品排序")
-//                                    @RequestParam int weight,
-//                                    @ApiParam("小标签")
-//                                    @RequestParam String lightTitle,
-//                                    @ApiParam("参考的原来的数据库的贷款金额上下限的字段，原本是字符串，现在拆成两个字段，这个字段不再使用")
-//                                    @RequestParam(required = false, defaultValue = "") String edu,
+                                    @RequestParam(required = false) String url,
                                     @ApiParam("贷款金额下限")
-                                    @RequestParam Integer minAmount,
+                                    @RequestParam(required = false) Integer minAmount,
                                     @ApiParam("贷款金额上限")
-                                    @RequestParam Integer maxAmount,
+                                    @RequestParam(required = false) Integer maxAmount,
                                     @ApiParam("贷款期限下限")
-                                    @RequestParam Integer minTerm,
+                                    @RequestParam(required = false) Integer minTerm,
                                     @ApiParam("贷款期限上限")
-                                    @RequestParam Integer maxTerm,
-//                                    @ApiParam("利率下限")
-//                                    @RequestParam Double lowInterest,
-//                                    @ApiParam("利率上限")
-//                                    @RequestParam Double highInterest,
-//                                    @ApiParam("信用资质")
-//                                    @RequestParam(required = false, defaultValue = "") String creditAuth,
+                                    @RequestParam(required = false) Integer maxTerm,
                                     @ApiParam("资方名称")
-                                    @RequestParam String lenderName,
+                                    @RequestParam(required = false) String lenderName,
                                     @ApiParam("产品日利率")
-                                    @RequestParam String dayRate,
+                                    @RequestParam(required = false) String dayRate,
                                     @ApiParam("借款资格")
-                                    @RequestParam(name = "guarantees") String[] guarantees
-//                                    @ApiParam("资方描述")
-//                                    @RequestParam String lenderDesc,
-//                                    @ApiParam("资方landing page页面中的获取验证码的地址")
-//                                    @RequestParam String activeCaptchaUrl,
-//                                    @ApiParam("这个是指资方landing page页面中的注册的链接")
-//                                    @RequestParam String regInterfaceUrl,
-//                                    @ApiParam("发布时间(时间戳)")
-//                                    @RequestParam Long publishTime,
-//                                    @ApiParam("下线时间(时间戳)")
-//                                    @RequestParam Long unpublishTime,
-//                                    @ApiParam("展示类型")
-//                                    @RequestParam(required = false, defaultValue = "0") int displayType,
-//                                    @ApiParam("对资方收费方式")
-//                                    @RequestParam(required = false, defaultValue = "0") Long chargeModeId,
-//                                    @ApiParam("申请次数")
-//                                    @RequestParam Integer applyTimes,
-//                                    @ApiParam("放款等待时间")
-//                                    @RequestParam Integer loanWaitTime
+                                    @RequestParam(name = "guarantees", required = false) String[] guarantees,
+                                    @ApiParam("权重")
+                                    @RequestParam(required = false) String weight
                             ) {
         Product product = new Product();
         
@@ -380,13 +384,12 @@ public class ProductController {
         
         // 拼接标签
         StringBuilder sb = new StringBuilder();
-        if (firstTags.length > 0) {
+        
+        if (firstTags != null && firstTags.length > 0) {
             for (String tag : firstTags) {
                 sb.append(tag + "|");
             }
             product.setFirstTags(sb.substring(0, sb.toString().length() - 1));
-        } else {
-            product.setFirstTags("");
         }
         
         List<String> secondTagList = new ArrayList<>();
@@ -404,8 +407,6 @@ public class ProductController {
             } else {
                 product.setSecondTags(secondTagList.get(0));
             }
-        } else {
-            product.setSecondTags("");
         }
         
 //        if (secondTags != null) {
@@ -415,7 +416,15 @@ public class ProductController {
             product.setDescription(description);
         }
         
-        product.setIsPublished(isPublished);
+        if (isPublished != null) {
+            product.setIsPublished(isPublished);
+            if (isPublished == 1) {
+                product.setPublishTime(new Date());
+            } else if (isPublished == 2) {
+                product.setUnpublishTime(new Date());
+            }
+        }
+        
         if (imgUrl != null) {
             product.setImgUrl(imgUrl);
         }
@@ -432,23 +441,33 @@ public class ProductController {
                 e.printStackTrace();
                 product.setUrl("");
             }
-        } else {
-            product.setUrl("");
         }
         
-        product.setWeight(0);
+        // 判断是否置顶
+//        product.setWeight(0);
+        if (weight != null) {
+            ProductExample example = new ProductExample();
+            example.setOrderByClause(" weight desc ");
+            List<Product> list = productMapper.selectByExample(example);
+            Integer bigestWeight = list.get(0).getWeight();
+            product.setWeight(bigestWeight + 1);
+        }
+        
         product.setLightTitle("");
         product.setEdu("");
         
         if (minAmount != null) {
             product.setMinAmount(minAmount);
         }
+        
         if (maxAmount != null) {
             product.setMaxAmount(maxAmount);
         }
+        
         if (minTerm != null) {
             product.setMinTerm(minTerm);
         }
+        
         if (maxTerm != null) {
             product.setMaxTerm(maxTerm);
         }
@@ -494,12 +513,12 @@ public class ProductController {
         
         int status = productService.update(product, resBody);
         
-        if (guarantees != null) {
+        if (guarantees != null && guarantees.length != 0) {
             // 先删除所有的映射记录
             List<Guarantee> deleteList = guaranteeMapper.selectByProductId(product.getId());
             for (Guarantee guarantee : deleteList) {
-//                guarantees.add(guarantee.getCreditGuarantee());
-                guaranteeMapper.deleteByPrimaryKey(guarantee.getId());
+                guaranteeProductMappingMapper.deleteByPrimaryKey(guarantee.getMappingId());
+                System.out.println("删除成功+++   " + guarantee.getMappingId());
             }
             
             // 重新插入
@@ -540,5 +559,233 @@ public class ProductController {
         int status = productService.index(list, resBody, pageNumber, pageSize);
         
         return ResponseEntity.status(status).body(resBody); 
+    }
+
+    
+    /**
+     * 筛选指定产品
+     * @return 
+     * obj1：返回带有分页信息的过滤之后的产品列表
+     * obj2：返回带有最高权重值的产品ID
+     */
+    @RequiresPermissions("product:read")
+    @SuppressWarnings("rawtypes")
+    @ApiOperation(value = "筛选产品", notes = "根据指定的条件进行筛选")
+    @RequestMapping(value = "/products/query", method = RequestMethod.POST, produces="application/json;charset=UTF-8") 
+    public ResponseEntity<?> screen(
+                                    @ApiParam("主标题")
+                                    @RequestParam(required = false) String title,
+                                    @ApiParam("资方名称")
+                                    @RequestParam(required = false) String lenderName,
+                                    @ApiParam("发布状态 0表示下线；1表示上线。")
+                                    @RequestParam(required = false) Integer isPublished,
+                                    @ApiParam("发布时间(时间戳)")
+                                    @RequestParam(required = false) Long publishTime,
+                                    @ApiParam("另一个发布时间(时间戳)")
+                                    @RequestParam(required = false) Long anotherPublishTime,
+                                    @ApiParam("贷款金额下限")
+                                    @RequestParam(required = false) Integer minAmount,
+                                    @ApiParam("贷款金额上限")
+                                    @RequestParam(required = false) Integer maxAmount,
+                                    @ApiParam("贷款期限下限")
+                                    @RequestParam(required = false) Integer minTerm,
+                                    @ApiParam("贷款期限上限")
+                                    @RequestParam(required = false) Integer maxTerm,
+                                    @ApiParam("借款资格资质")
+                                    @RequestParam(name = "guarantees", required =false) String[] guarantees,
+                                    @ApiParam("页码")
+                                    @RequestParam(required = false, defaultValue = "1") int pageNumber,
+                                    @ApiParam("每页多少条")
+                                    @RequestParam(required = false, defaultValue = "10") int pageSize
+                                    ) {
+        /*
+        "SELECT p.*, gm.guarantee_id, g.credit_guarantee\n" + 
+        "from product as p join guarantee_product_mapping as gm on p.id = gm.product_id\n" + 
+        "join guarantee as g on g.id = gm.guarantee_id\n" + 
+        "where credit_guarantee = \"芝麻分\"\n" + 
+        "and title like \"%贷%\" \n" + 
+        "and lender_name like \"%金%\"\n" + 
+        "and is_published = 1\n" + 
+        "and min_amount <= 2000 \n" + 
+        "and max_amount >= 2500\n" + 
+        "and min_term <= 12\n" + 
+        "and max_term >= 14\n" + 
+        "and publish_time >= date(\"2017-12-6\") \n" + 
+        "and publish_time <= date(\"2017-12-20\")"
+        */
+        List<Product> list = null;
+        
+        // 查询字符串
+        StringBuilder sb = new StringBuilder();
+        // 拼接的 where 字句
+        StringBuilder whereCause = new StringBuilder();
+        
+        // 先判断是否需要关联其他表，
+//        if (guarantees != null && guarantees.length != 0) {
+//        if (guarantees != null && guarantees.length != 0) {
+//            sb.append(obj)
+//        }
+            sb.append("SELECT p.*, gm.guarantee_id, g.credit_guarantee " + 
+                      "from product as p join guarantee_product_mapping as gm on p.id = gm.product_id " + 
+                      "join guarantee as g on g.id = gm.guarantee_id " +
+                      "where ");
+            sb.append("1 = 1 ");
+            
+            if (guarantees != null && guarantees.length != 0) {
+                sb.append("and (");
+                for (String guarantee : guarantees) {
+                    sb.append("credit_guarantee = '" + guarantee + "' and ");
+                }
+    //            if (guarantees.length != 1) {
+                    sb = sb.delete(sb.toString().length() - 4, sb.toString().length()).append(") ");
+    //            }
+            }
+            
+            if (title != null) {
+                whereCause.append("and title like '%" + title + "%' ");
+            }
+            
+            if (lenderName != null) {
+                whereCause.append("and lender_name like '%" + lenderName + "%' ");
+            }
+            
+            if (isPublished != null) {
+                whereCause.append("and is_published = " + isPublished + " ");
+            }
+            
+            if (minAmount != null) {
+                whereCause.append("and min_amount <= " + minAmount + " ");
+            }
+            
+            if (maxAmount != null) {
+                whereCause.append("and max_amount >= " + maxAmount + " ");
+            }
+            
+            if (minTerm != null) {
+                whereCause.append("and min_term <= " + minTerm + " ");
+            }
+            
+            if (maxTerm != null) {
+                whereCause.append("and max_term >= " + maxTerm + " ");
+            }
+            
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//            long st = Long.parseLong(publishTime);
+            if (publishTime != null) {
+                Date date = new Date(publishTime);
+                String format = sdf.format(date);
+                System.out.println("startTime: " + format);
+                whereCause.append("and publish_time >= date('" + format +"') ");
+            }
+            
+            if (anotherPublishTime != null) {
+                Date date = new Date(anotherPublishTime);
+                String format = sdf.format(date);
+                System.out.println("endTime: " + format);
+                whereCause.append("and publish_time <= date('" + format +"') ");
+            }
+            
+            whereCause.append("group by id");
+            sb.append(whereCause);
+            
+            if (guarantees == null || guarantees.length == 0) {
+                sb.insert(0, "(");
+                sb.append(") union (select *, 0 as guarantee_id, 0 as credit_guarantee " + 
+                        "from product " + 
+                        "where id not in (select a.id from product a join guarantee_product_mapping b " +
+                        "where a.id = b.product_id GROUP BY a.id)" + whereCause.toString() + ") ");
+//                sb.append("union ")
+            }
+            sb.append(" ORDER BY id DESC ");
+            System.out.println(sb.toString());
+            PageHelper.startPage(pageNumber, pageSize);
+            list = productMapper.selectByQueryString(sb.toString());
+            
+//        }
+        
+        ResponseBody resBody = new ResponseBody<List<Product>>();
+        
+        // 分页
+        PageDTO<List<ProductDTO>> pageDTO = filterProduct(list, pageSize, pageSize);
+        
+        // obj1：返回带有分页信息的过滤之后的产品列表
+        resBody.obj1 = pageDTO;
+        
+        ProductExample example = new ProductExample();
+        example.setOrderByClause(" weight desc ");
+        List<Product> weightList = productMapper.selectByExample(example);
+        if (weightList.size() != 0) {
+            // obj2：返回带有最高权重值的产品ID
+            resBody.obj2 = weightList.get(0).getId();
+        }
+            
+        return ResponseEntity.status(HttpServletResponse.SC_OK).body(resBody); 
+    }
+    
+    /**
+     * 将传入的集合转成目标类型后，加入分页数据
+     * @param list 原始的集合
+     * @param pageNumber 页码
+     * @param pageSize 每页记录数
+     * @return
+     */
+    public PageDTO<List<ProductDTO>> filterProduct(List<Product> list, int pageNumber, int pageSize) {
+        List<ProductDTO> dtos = new ArrayList<>();
+        for (Product product : list) {
+            ProductDTO dto = new ProductDTO(product);
+            
+            List<Guarantee> guaranteeList = guaranteeMapper.selectByProductId(product.getId());
+            List<String> g = new ArrayList<>();
+            for (Guarantee guarantee : guaranteeList) {
+                g.add(guarantee.getCreditGuarantee());
+            }
+            dto.setGuarantees(g);
+            dtos.add(dto);
+        }
+        
+        PageInfo<Product> pageInfo = new PageInfo<>(list);
+        PageDTO<List<ProductDTO>> pageDTO = new PageDTO<>();
+        pageDTO.setDataCount((int) pageInfo.getTotal());
+        pageDTO.setPageNumber(pageNumber);
+        pageDTO.setPagesCount(pageInfo.getPages());
+        pageDTO.setPageSize(pageSize);
+        pageDTO.setData(dtos);
+        
+        return pageDTO;
+    }
+    
+//    @RequiresPermissions("product:read")
+//    @SuppressWarnings("rawtypes")
+//    @ApiOperation(value = "筛选产品", notes = "根据指定的条件进行筛选")
+//    @RequestMapping(value = "/products/updateStatus", method = RequestMethod.POST, produces="application/json;charset=UTF-8") 
+//    public ResponseEntity<?> updateStatus(
+//                                        @ApiParam("id")
+//                                        @RequestParam long id,
+//                                        @ApiParam("发布状态 0表示下线；1表示上线；2表示下线")
+//                                        @RequestParam Integer isPublished
+//                                        ) {
+//        Product product = new Product();
+//        product.setId(id);
+//        
+//        if (isPublished != null) {
+//            product.setIsPublished(isPublished);
+//            if (isPublished == 1) {
+//                product.setPublishTime(new Date());
+//            } else if (isPublished == 2) {
+//                product.setUnpublishTime(new Date());
+//            }
+//            
+//            productMapper.updateByPrimaryKeySelective(product);
+//        }
+//        
+//        return ResponseEntity.status(HttpServletResponse.SC_OK).body(null);
+//    }
+    
+    public static void main(String[] args) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        long st = Long.parseLong("1516867278000");
+        Date date = new Date(st);
+        String format = sdf.format(date);
+        System.out.println(format);
     }
 }

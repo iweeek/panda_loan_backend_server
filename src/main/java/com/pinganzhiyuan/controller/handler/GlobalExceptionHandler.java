@@ -45,19 +45,19 @@ public class GlobalExceptionHandler {
         com.pinganzhiyuan.util.ResponseBody resBody = new com.pinganzhiyuan.util.ResponseBody();
         exception.printStackTrace();
         if (exception instanceof ExpiredJwtException) {
-            resBody.statusMsg = "对不起，您没有权限访问";
+            resBody.statusMsg = "您没有权限访问";
             return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).body(resBody);
         } else if (exception instanceof UnauthorizedException) {
-            resBody.statusMsg = "对不起，您没有权限访问";
+            resBody.statusMsg = "您没有权限访问";
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(resBody);
         } else if (exception instanceof UnauthenticatedException) {
-            resBody.statusMsg = "对不起，您还未登录";
+            resBody.statusMsg = "您还未登录";
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(resBody);
         } else if (exception instanceof ExcessiveAttemptsException) {
-            resBody.statusMsg = "对不起，您尝试登录的次数过多";
+            resBody.statusMsg = "您尝试登录的次数过多";
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(resBody);
         } else {
-            resBody.statusMsg = "对不起，服务器开小差啦";
+            resBody.statusMsg = "服务器开小差啦";
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resBody);
         }
     }

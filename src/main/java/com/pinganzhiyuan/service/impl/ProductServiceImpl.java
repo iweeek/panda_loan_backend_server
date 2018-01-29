@@ -60,17 +60,17 @@ public class ProductServiceImpl implements ProductService {
 		ProductExample example = new ProductExample();
 		example.createCriteria().andTitleEqualTo(product.getTitle());
 		List<Product> sameRecordList = productMapper.selectByExample(example);
-		if (sameRecordList.size() != 0) {
-			logMsg = RetMsgTemplate.MSG_TEMPLATE_NAME_EXIST.replace("%s", product.getTitle());
-			logger.error(logMsg);
-			
-			product.setId(sameRecordList.get(0).getId());
-			
-			resBody.statusMsg = logMsg;
-			resBody.obj1 = product;
-			
-			return HttpServletResponse.SC_CONFLICT;
-		} else {
+//		if (sameRecordList.size() != 0) {
+//			logMsg = RetMsgTemplate.MSG_TEMPLATE_NAME_EXIST.replace("%s", product.getTitle());
+//			logger.error(logMsg);
+//			
+//			product.setId(sameRecordList.get(0).getId());
+//			
+//			resBody.statusMsg = logMsg;
+//			resBody.obj1 = product;
+//			
+//			return HttpServletResponse.SC_CONFLICT;
+//		} else {
 			productMapper.insertSelective(product);
 			// 更新 URL
 			String url = product.getUrl();
@@ -97,7 +97,7 @@ public class ProductServiceImpl implements ProductService {
 			resBody.obj1 = product;
 			
 			return HttpServletResponse.SC_CREATED;
-		}
+//		}
 	}
 
 	public static void main(String[] args) {
@@ -142,39 +142,56 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public int update(Product product, ResponseBody resBody) {
 		ProductExample example = new ProductExample();
-		example.createCriteria().andTitleEqualTo(product.getTitle()).andIdNotEqualTo(product.getId());
-		List<Product> list = productMapper.selectByExample(example);
-		if (list.size() > 0) {
-			logMsg = RetMsgTemplate.MSG_TEMPLATE_NAME_EXIST.replace("%s", product.getTitle());
-			logger.error(logMsg);
-			
-			resBody.obj1 = list.get(0);
-			resBody.statusMsg = logMsg; 
-			
-			return HttpServletResponse.SC_CONFLICT;
-		} else {
-			example.clear();
-			example.createCriteria().andIdEqualTo(product.getId());
-			list = productMapper.selectByExample(example);
-			if (list.size() > 0) {
-				productMapper.updateByPrimaryKeySelective(product);
-				logMsg = RetMsgTemplate.MSG_TEMPLATE_OPERATION_OK;
-				logger.info(logMsg);
-				
-				resBody.obj1 = product;
-				resBody.statusMsg = logMsg; 
-				
-				return HttpServletResponse.SC_OK;
-			} else {
-				logMsg = RetMsgTemplate.MSG_TEMPLATE_NOT_FIND_BY_ID.replace("%s", String.valueOf(product.getId()));
-				logger.error(logMsg);
-				
-				resBody.obj1 = null;
-				resBody.statusMsg = logMsg;
-				
-				return HttpServletResponse.SC_NOT_FOUND;
-			}
+		Product p = new Product();
 		
+		// 更新发布状态，不需要判断 title 是否存在
+		if (product.getTitle() == null) {
+	        productMapper.updateByPrimaryKeySelective(product);
+	        logMsg = RetMsgTemplate.MSG_TEMPLATE_OPERATION_OK;
+            logger.info(logMsg);
+            
+            resBody.obj1 = product;
+            resBody.statusMsg = logMsg; 
+            
+            return HttpServletResponse.SC_OK;
+		} else {
+		    List<Product> list = null;
+		    // 全量更新
+//            example.createCriteria().andTitleEqualTo(product.getTitle()).andIdNotEqualTo(product.getId());
+//            List<Product> list = productMapper.selectByExample(example);
+//            // 更新需要判断该 title 是否已存在
+//            if (list.size() > 0) {
+//                logMsg = RetMsgTemplate.MSG_TEMPLATE_NAME_EXIST.replace("%s", product.getTitle());
+//        			logger.error(logMsg);
+//        			
+//        			resBody.obj1 = list.get(0);
+//        			resBody.statusMsg = logMsg; 
+//        			
+//        			return HttpServletResponse.SC_CONFLICT;
+//        		} else {
+        			example.clear();
+        			example.createCriteria().andIdEqualTo(product.getId());
+        			list = productMapper.selectByExample(example);
+        			if (list.size() > 0) {
+        				productMapper.updateByPrimaryKeySelective(product);
+        				logMsg = RetMsgTemplate.MSG_TEMPLATE_OPERATION_OK;
+        				logger.info(logMsg);
+        				
+        				resBody.obj1 = product;
+        				resBody.statusMsg = logMsg; 
+        				
+        				return HttpServletResponse.SC_OK;
+        			} else {
+        				logMsg = RetMsgTemplate.MSG_TEMPLATE_NOT_FIND_BY_ID.replace("%s", String.valueOf(product.getId()));
+        				logger.error(logMsg);
+        				
+        				resBody.obj1 = null;
+        				resBody.statusMsg = logMsg;
+        				
+        				return HttpServletResponse.SC_NOT_FOUND;
+        			}
+        		
+//        		}
 		}
 		
 	}
@@ -272,6 +289,24 @@ public class ProductServiceImpl implements ProductService {
 		}
 	}
 
+	public List<Product> handleUrl(List<Product> productList) {
+	    // 处理 URL，截取最后真正的链接
+        for (Product product : productList) {
+            String decodeUrl = "";
+            Pattern p = Pattern.compile("redirect=(.*?)###");//正则表达式，取; 和; 之间的字符串  
+            Matcher m = p.matcher(product.getUrl() + "###");
+            if (m.find()) {
+                    try {
+                        decodeUrl = URLDecoder.decode(m.group(1), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+            product.setUrl(decodeUrl);
+        }
+        return productList;
+	}
+	
     @Override
     public int index(List<Product> pointList, ResponseBody resBody) {
         // TODO Auto-generated method stub
