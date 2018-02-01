@@ -31,6 +31,7 @@ public class FileUtil {
 
 		if (!file.exists()) {
 			file.createNewFile();
+			System.out.println("file.getAbsolutePath(): " + file.getAbsolutePath());
 			Runtime.getRuntime().exec("chmod o+r " + file.getAbsolutePath()); 
 		}
 

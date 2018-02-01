@@ -19,5 +19,7 @@ public interface ProductService {
     int index(List<Product> pointList, ResponseBody resBody, int pageNumber, int pageSize);
 
     int index(List<Product> pointList, ResponseBody resBody);
+
+    public int resort(long touchId, long insertId, ResponseBody resBody);
     
 }
