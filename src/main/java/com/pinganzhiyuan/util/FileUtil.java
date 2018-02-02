@@ -22,6 +22,7 @@ public class FileUtil {
     	    fileName = fileName + ext;
 	    }
 	    
+	    
 		String filePath = path + File.separator + fileName;
 		File file = new File(filePath);
 
@@ -29,12 +30,21 @@ public class FileUtil {
 			file.getParentFile().mkdir();
 		}
 
-		if (!file.exists()) {
-			file.createNewFile();
-			Runtime.getRuntime().exec("chmod o+r " + file.getAbsolutePath()); 
-		}
+		// 不用先创建文件
+//		boolean isCreated = false;
+//		if (!file.exists()) {
+//			isCreated = file.createNewFile();
+//            if (isCreated) {
+//                System.out.println(isCreated);
+//            }
+//            Runtime.getRuntime().exec("chmod o+rx " + file.getAbsolutePath()); 
+//			
+//		}
 
 		mFile.transferTo(file);
+		
+		System.out.println("file.getAbsolutePath(): " + file.getAbsolutePath());
+        Runtime.getRuntime().exec("chmod o+rx " + file.getAbsolutePath()); 
 		
 		return fileName;
 	}

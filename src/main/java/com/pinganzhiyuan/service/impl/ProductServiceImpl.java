@@ -88,6 +88,7 @@ public class ProductServiceImpl implements ProductService {
                 StringBuilder sb = new StringBuilder();
                 sb.append(s1 + product.getId() + s2);
                 product.setUrl(sb.toString());
+                System.out.println("新增的产品Id为：" + product.getId());
                 productMapper.updateByPrimaryKeySelective(product);
             }
 			logMsg = RetMsgTemplate.MSG_TEMPLATE_OPERATION_OK;

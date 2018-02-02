@@ -17,6 +17,7 @@ import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -157,7 +158,13 @@ public class ProductController {
         List<String> secondTagList = new ArrayList<>();
         
         if (maxAmount != null) {
-            secondTagList.add("最高" + maxAmount / 10000 + "万元");
+            String secondTag = "";
+            if ((maxAmount / 10000) >= 1) {
+                secondTag = "最高" + maxAmount / 10000 + "万元";
+            } else {
+                secondTag = "最高" + maxAmount + "元";
+            }
+            secondTagList.add(secondTag);
         }
         
         if (dayRate != null) {
@@ -195,7 +202,9 @@ public class ProductController {
         
         // 导向地址
         // http://119.23.12.36:8081/panda_loan/record?pid=1&redirect=http%3A%2F%2Fh.sinaif.com%2FloginCommon%3FcodeKey%3D1002_s2828233_CP001
-        String origin = "http://119.23.12.36:8081/panda_loan/record?pid=0&redirect=";
+        // TODO https://api.pinganzhiyuan.com/panda_loan/record?pid=143&redirect=https%3A%2F%2Fat.umeng.com%2FH9DWTz
+        String origin = PathUtil.getInstance().PRODUCTURL;
+        System.out.println("新增产品 product url: " + origin);
         if (url != null) {
             try {
                 String encode = URLEncoder.encode(url, "UTF-8");
@@ -313,6 +322,7 @@ public class ProductController {
             return null;
         }
         imageUrl = PathUtil.getInstance().ORIGIN + File.separator + imagePath;
+//        imageUrl = File.separator + imagePath;
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(imageUrl);
     }
     
@@ -395,7 +405,13 @@ public class ProductController {
         List<String> secondTagList = new ArrayList<>();
         
         if (maxAmount != null) {
-            secondTagList.add("最高" + maxAmount / 10000 + "万元");
+            String secondTag = "";
+            if ((maxAmount / 10000) >= 1) {
+                secondTag = "最高" + maxAmount / 10000 + "万元";
+            } else {
+                secondTag = "最高" + maxAmount + "元";
+            }
+            secondTagList.add(secondTag);
         }
         
         if (dayRate != null) {
@@ -430,18 +446,20 @@ public class ProductController {
         }
         
         // 导向地址
-        // http://119.23.12.36:8081/panda_loan/record?pid=1&redirect=http%3A%2F%2Fh.sinaif.com%2FloginCommon%3FcodeKey%3D1002_s2828233_CP001
-        String origin = "http://119.23.12.36:8081/panda_loan/record?pid=0&redirect=";
-        if (url != null) {
-            try {
-                String encode = URLEncoder.encode(url, "UTF-8");
-                String finalUrl = origin + encode;
-                product.setUrl(finalUrl);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-                product.setUrl("");
-            }
-        }
+//         http://119.23.12.36:8081/panda_loan/record?pid=1&redirect=http%3A%2F%2Fh.sinaif.com%2FloginCommon%3FcodeKey%3D1002_s2828233_CP001
+//        String origin = "http://119.23.12.36:8081/panda_loan/record?pid=0&redirect=";
+        // url 是不允许更新的。
+//        String origin = "https://api.pinganzhiyuan.com/panda_loan/record?pid=0&redirect=";
+//        if (url != null) {
+//            try {
+//                String encode = URLEncoder.encode(url, "UTF-8");
+//                String finalUrl = origin + encode;
+//                product.setUrl(finalUrl);
+//            } catch (UnsupportedEncodingException e) {
+//                e.printStackTrace();
+//                product.setUrl("");
+//            }
+//        }
         
         // 判断是否置顶
 //        product.setWeight(0);

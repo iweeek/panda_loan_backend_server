@@ -23,6 +23,7 @@ public class PathUtil {
      * 需要配置，图片和视频服务器
      */
     public String ORIGIN = "";
+    public String PRODUCTURL = "";
     
     public String imagePath = "";
     
@@ -30,8 +31,9 @@ public class PathUtil {
      * 不能有默认的无参构造方法
      */
     @Autowired
-    public PathUtil(@Value("${hostname}") String hostName) {      
+    public PathUtil(@Value("${hostname}") String hostName, @Value("${productUrl}") String productUrl) {      
         ORIGIN = hostName;
+        PRODUCTURL = productUrl;
         instance = this;
     }
     
