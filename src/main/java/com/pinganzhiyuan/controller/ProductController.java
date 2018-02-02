@@ -48,7 +48,6 @@ import io.swagger.annotations.ApiParam;
 
 @Api(tags = "产品相关接口")
 @RestController
-//@RequestMapping(value="/areaSports",produces="application/json;charset=UTF-8")
 public class ProductController {
 
     @Autowired
@@ -65,6 +64,10 @@ public class ProductController {
    
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
     
+    /**
+     * 创建的时有默认值
+     * @return
+     */
     @RequiresPermissions("product:write")
     @SuppressWarnings("rawtypes")
     @ApiOperation(value = "创建一个产品", notes = "使用POST来创建一个新的产品，由服务端来分配创建一个新资源")
@@ -76,8 +79,6 @@ public class ProductController {
                             @RequestParam Boolean isNew,
                             @ApiParam("对应客户端第一行的标签")
                             @RequestParam(name = "firstTags") String[] firstTags,
-//                            @ApiParam("对应客户端第二行的标签")
-//                            @RequestParam(required = false, defaultValue = "") String secondTags,
                             @ApiParam("产品的描述")
                             @RequestParam(required = false, defaultValue = "") String description,
                             @ApiParam("是否发布 0表示下线；1表示上线。")
@@ -86,12 +87,6 @@ public class ProductController {
                             @RequestParam String imgUrl,
                             @ApiParam("导向的资方地址")
                             @RequestParam String url,
-//                            @ApiParam("权重，用来对产品排序")
-//                            @RequestParam int weight,
-//                            @ApiParam("小标签")
-//                            @RequestParam String lightTitle,
-//                            @ApiParam("参考的原来的数据库的贷款金额上下限的字段，原本是字符串，现在拆成两个字段，这个字段不再使用")
-//                            @RequestParam(required = false, defaultValue = "") String edu,
                             @ApiParam("贷款金额下限")
                             @RequestParam Integer minAmount,
                             @ApiParam("贷款金额上限")
@@ -100,35 +95,12 @@ public class ProductController {
                             @RequestParam Integer minTerm,
                             @ApiParam("贷款期限上限")
                             @RequestParam Integer maxTerm,
-//                            @ApiParam("利率下限")
-//                            @RequestParam Double lowInterest,
-//                            @ApiParam("利率上限")
-//                            @RequestParam Double highInterest,
-//                            @ApiParam("信用资质")
-//                            @RequestParam(required = false, defaultValue = "") String creditAuth,
                             @ApiParam("资方名称")
                             @RequestParam String lenderName,
                             @ApiParam("产品日利率")
                             @RequestParam String dayRate,
                             @ApiParam("借款资格")
                             @RequestParam(name = "guarantees", required = false) String[] guarantees
-//                            @ApiParam("资方描述")
-//                            @RequestParam String lenderDesc,
-//                            @ApiParam("资方landing page页面中的获取验证码的地址")
-//                            @RequestParam String activeCaptchaUrl,
-//                            @ApiParam("这个是指资方landing page页面中的注册的链接")
-//                            @RequestParam String regInterfaceUrl,
-//                            @ApiParam("发布时间(时间戳)")
-//                            @RequestParam Long publishTime,
-//                            @ApiParam("下线时间(时间戳)")
-//                            @RequestParam Long unpublishTime,
-//                            @ApiParam("展示类型")
-//                            @RequestParam(required = false, defaultValue = "0") int displayType,
-//                            @ApiParam("对资方收费方式")
-//                            @RequestParam(required = false, defaultValue = "0") Long chargeModeId,
-//                            @ApiParam("申请次数")
-//                            @RequestParam Integer applyTimes,
-//                            @RequestParam Integer loanWaitTime
                             ) {
         
         Product product = new Product();
@@ -150,6 +122,7 @@ public class ProductController {
             for (String tag : firstTags) {
                 sb.append(tag + "|");
             }
+            // 去掉最后一个 “|”
             product.setFirstTags(sb.substring(0, sb.toString().length() - 1));
         } else {
             product.setFirstTags("");
@@ -180,9 +153,6 @@ public class ProductController {
             product.setSecondTags("");
         }
         
-//        if (secondTags != null) {
-//            product.setSecondTags(secondTags);
-//        }
         if (description != null) {
             product.setDescription(description);
         } else {
@@ -190,6 +160,7 @@ public class ProductController {
         }
         
         product.setIsPublished(isPublished);
+        // 创建时指定为发布状态
         if (isPublished == 1) {
             product.setPublishTime(new Date());
         }
@@ -263,16 +234,6 @@ public class ProductController {
         product.setLenderDesc("");
         product.setActiveCaptchaUrl("");
         product.setRegInterfaceUrl("");
-        
-//        product.setPublishTime(new Date());
-//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        Date date;
-//        try {
-//            date = format.parse("0000-00-00 00:00:00");
-//            product.setUnpublishTime(date);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
         
         product.setDisplayType((byte) 0);
         product.setChargeModeId((long) 0);
@@ -506,17 +467,6 @@ public class ProductController {
         product.setActiveCaptchaUrl("");
         product.setRegInterfaceUrl("");
         
-//        product.setPublishTime(new Date());
-//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        Date date;
-//        try {
-//            date = format.parse("0000-00-00 00:00:00");
-//            product.setUnpublishTime(date);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//       
-        
         product.setDisplayType((byte) 0);
         product.setChargeModeId((long) 0);
         
@@ -616,21 +566,6 @@ public class ProductController {
                                     @ApiParam("每页多少条")
                                     @RequestParam(required = false, defaultValue = "10") int pageSize
                                     ) {
-        /*
-        "SELECT p.*, gm.guarantee_id, g.credit_guarantee\n" + 
-        "from product as p join guarantee_product_mapping as gm on p.id = gm.product_id\n" + 
-        "join guarantee as g on g.id = gm.guarantee_id\n" + 
-        "where credit_guarantee = \"芝麻分\"\n" + 
-        "and title like \"%贷%\" \n" + 
-        "and lender_name like \"%金%\"\n" + 
-        "and is_published = 1\n" + 
-        "and min_amount <= 2000 \n" + 
-        "and max_amount >= 2500\n" + 
-        "and min_term <= 12\n" + 
-        "and max_term >= 14\n" + 
-        "and publish_time >= date(\"2017-12-6\") \n" + 
-        "and publish_time <= date(\"2017-12-20\")"
-        */
         List<Product> list = null;
         
         // 查询字符串
@@ -714,7 +649,7 @@ public class ProductController {
                         "where a.id = b.product_id GROUP BY a.id)" + whereCause.toString() + ") ");
 //                sb.append("union ")
             }
-            sb.append(" ORDER BY id DESC ");
+            sb.append(" ORDER BY weight DESC ");
             System.out.println(sb.toString());
             PageHelper.startPage(pageNumber, pageSize);
             list = productMapper.selectByQueryString(sb.toString());
@@ -772,32 +707,22 @@ public class ProductController {
         return pageDTO;
     }
     
-//    @RequiresPermissions("product:read")
-//    @SuppressWarnings("rawtypes")
-//    @ApiOperation(value = "筛选产品", notes = "根据指定的条件进行筛选")
-//    @RequestMapping(value = "/products/updateStatus", method = RequestMethod.POST, produces="application/json;charset=UTF-8") 
-//    public ResponseEntity<?> updateStatus(
-//                                        @ApiParam("id")
-//                                        @RequestParam long id,
-//                                        @ApiParam("发布状态 0表示下线；1表示上线；2表示下线")
-//                                        @RequestParam Integer isPublished
-//                                        ) {
-//        Product product = new Product();
-//        product.setId(id);
-//        
-//        if (isPublished != null) {
-//            product.setIsPublished(isPublished);
-//            if (isPublished == 1) {
-//                product.setPublishTime(new Date());
-//            } else if (isPublished == 2) {
-//                product.setUnpublishTime(new Date());
-//            }
-//            
-//            productMapper.updateByPrimaryKeySelective(product);
-//        }
-//        
-//        return ResponseEntity.status(HttpServletResponse.SC_OK).body(null);
-//    }
+    @RequiresPermissions("product:write")
+    @SuppressWarnings("rawtypes")
+    @ApiOperation(value = "排序产品", notes = "客户端传上来一个Id")
+    @RequestMapping(value = "/products/sort", method = RequestMethod.POST, produces="application/json;charset=UTF-8") 
+    public ResponseEntity<?> sort(
+                            @ApiParam("Id")
+                            @RequestParam(required = false) Long touchId,
+                            @ApiParam("排序Id")
+                            @RequestParam(required = false) Long insertId
+                            ) {
+        System.out.println("before touchId: " + touchId);
+        System.out.println("before insertId: " + insertId);
+        ResponseBody resBody = new ResponseBody<Product>();
+        int status = productService.resort(touchId, insertId, resBody);
+        return ResponseEntity.status(status).body(resBody);
+    }
     
     public static void main(String[] args) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");

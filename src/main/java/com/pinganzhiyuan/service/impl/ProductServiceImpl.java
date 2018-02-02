@@ -71,6 +71,7 @@ public class ProductServiceImpl implements ProductService {
 //			
 //			return HttpServletResponse.SC_CONFLICT;
 //		} else {
+		    // 如果插入失败
 			productMapper.insertSelective(product);
 			// 更新 URL
 			String url = product.getUrl();
@@ -308,11 +309,70 @@ public class ProductServiceImpl implements ProductService {
         return productList;
 	}
 	
+	
+	
     @Override
     public int index(List<Product> pointList, ResponseBody resBody) {
-        // TODO Auto-generated method stub
         return 0;
     }
-	
-	
+
+    @Override
+    public int resort(long touchId, long insertId, ResponseBody resBody) {
+        ProductExample example = new ProductExample();
+        example.setOrderByClause(" weight desc ");
+        List<Product> originList = productMapper.selectByExample(example);
+        int touchIndex = 0; // 表示插入位置的前一个位置索引。
+        int insertIndex = 0; // 表示选中拖拽的元素索引。
+        int oriWeight = 0; // 表示插入位置的前一个位置的权重。之后要赋值给待插入元素。
+        boolean isFirst = false; // 表示插入位置是不是索引为 0。
+        
+        for (int i = 0; i < originList.size(); i++) {
+            Product product = originList.get(i);
+            if (product.getId() == insertId) {
+                insertIndex = i;
+                oriWeight = product.getWeight();
+            }
+            if (product.getId() == touchId) {
+                touchIndex = i;
+            }
+        }
+        System.out.println("after touchIndex: " + touchIndex);
+        System.out.println("after insertIndex: " + insertIndex);
+        
+        // 插入位置索引为 0 的情况下，直接将第一个位置元素的权重加上 1 赋值给待插入元素
+        if (insertId == -1) {
+            originList.get(touchIndex).setWeight(originList.get(0).getWeight() + 1);
+        } else {
+            // 分两种情况，先判断是向上拖动，还是向下,于是下面是得到两个索引指向的产品
+            Product touchProduct = originList.get(touchIndex);
+            Product insertProduct = originList.get(insertIndex);
+            
+//            if (touchProduct.getWeight() < insertProduct.getWeight()) {
+                System.out.println("向上拖动");
+                // 初始权重小于末权重，向上拖动，遍历包括插入位置之前的所有产品，将其权重加上 1.
+                for (int i = 0; i <= insertIndex; i++) {
+                    originList.get(i).setWeight(originList.get(i).getWeight() + 1);
+                }
+                // 将待插入产品(touchIndex)的权重设置为插入位置的前一个位置元素的权重
+                originList.get(touchIndex).setWeight(oriWeight);
+                System.out.println("insertIndex: " + insertIndex + ", oriWeight: " + oriWeight);
+//            } else if (touchProduct.getWeight() > insertProduct.getWeight()) {
+//                System.out.println("向下拖动");
+//                // 初始权重大于末权重，向下拖动，遍历包括插入位置之前的所有产品，将其权重加上 1.
+//                for (int i = 0; i <= insertIndex; i++) {
+//                    originList.get(i).setWeight(originList.get(i).getWeight() + 1);
+//                }
+//                // 将待插入产品(touchIndex)的权重设置为插入位置的前一个位置元素的权重
+//                originList.get(touchIndex).setWeight(oriWeight);
+//            }
+        }
+        
+        // 遍历更新
+        for (int i = 0; i < originList.size(); i++) {
+            productMapper.updateByPrimaryKeySelective(originList.get(i));
+        }
+        
+        return HttpServletResponse.SC_OK;
+    }
+
 }
