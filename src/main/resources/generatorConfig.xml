@@ -271,6 +271,21 @@
       <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
     </table>
-    
+    <table schema="panda_loan" tableName="app_column" domainObjectName ="Column" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+    <table schema="panda_loan" tableName="product_column_mapping" domainObjectName ="ProductColumnMapping" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+    <table schema="panda_loan" tableName="client_column_mapping" domainObjectName ="ClientColumnMapping" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <columnOverride column="platform_id" javaType="java.lang.Integer"/>
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
   </context>
 </generatorConfiguration>

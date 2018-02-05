@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.pinganzhiyuan.model.Column;
 import com.pinganzhiyuan.model.Product;
 
 public class ProductDTO {
@@ -605,6 +606,16 @@ public class ProductDTO {
 
     public void setOriginUrl(String originUrl) {
         this.originUrl = originUrl;
+    }
+    
+    private List<Column> columns;
+
+    public List<Column> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(List<Column> columns) {
+        this.columns = columns;
     }
 
     public ProductDTO(Product product) {
