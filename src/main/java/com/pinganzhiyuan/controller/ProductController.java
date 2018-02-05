@@ -369,7 +369,9 @@ public class ProductController {
                                     @ApiParam("借款资格")
                                     @RequestParam(name = "guarantees", required = false) String[] guarantees,
                                     @ApiParam("权重")
-                                    @RequestParam(required = false) String weight
+                                    @RequestParam(required = false) String weight,
+                                    @ApiParam("借款资格")
+                                    @RequestParam(name = "columnKeys", required = false) String[] columnKeys
                             ) {
         Product product = new Product();
         
@@ -533,6 +535,24 @@ public class ProductController {
                         }
                     }
                 }
+            }
+        }
+        if (columnKeys != null && columnKeys.length != 0) {
+            // 先删除所有的映射记录
+            ProductColumnMappingExample example = new ProductColumnMappingExample();
+            example.createCriteria().andProductIdEqualTo(product.getId());
+            List<ProductColumnMapping> deleteList = productColumnMappingMapper.selectByExample(example);
+            for (ProductColumnMapping mapping : deleteList) {
+                productColumnMappingMapper.deleteByPrimaryKey(mapping.getId());
+                System.out.println("删除产品栏位映射成功+++   " + mapping.getId());
+            }
+            
+            ProductColumnMapping mapping = new ProductColumnMapping();
+            // 重新插入
+            for (String key : columnKeys) {
+                mapping.setColumnKey(key);
+                mapping.setProductId(product.getId());
+                productColumnMappingService.create(mapping);
             }
         }
         
