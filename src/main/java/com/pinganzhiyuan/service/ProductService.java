@@ -21,5 +21,11 @@ public interface ProductService {
     int index(List<Product> pointList, ResponseBody resBody);
 
     public int resort(long touchId, long insertId, ResponseBody resBody);
+
+    /**
+     * 置顶一个产品
+     * @param product
+     */
+    void bringToTop(Product product);
     
 }

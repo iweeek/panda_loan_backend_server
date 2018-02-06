@@ -77,6 +77,8 @@ public class ProductController {
                             @RequestParam String title,
                             @ApiParam("对应客户端“新”标签")
                             @RequestParam Boolean isNew,
+                            @ApiParam("是否置顶")
+                            @RequestParam Boolean isTop,
                             @ApiParam("对应客户端第一行的标签")
                             @RequestParam(name = "firstTags") String[] firstTags,
                             @ApiParam("产品的描述")
@@ -114,6 +116,10 @@ public class ProductController {
             product.setIsNew(isNew);
         } else {
             product.setIsNew(false);
+        }
+        
+        if (isTop != null && isTop) {
+            productService.bringToTop(product);
         }
         
         // 拼接标签
@@ -340,7 +346,19 @@ public class ProductController {
                                     @ApiParam("借款资格")
                                     @RequestParam(name = "guarantees", required = false) String[] guarantees,
                                     @ApiParam("权重")
+<<<<<<< Updated upstream
                                     @RequestParam(required = false) String weight
+||||||| merged common ancestors
+                                    @RequestParam(required = false) String weight,
+                                    @ApiParam("借款资格")
+                                    @RequestParam(name = "columnKeys", required = false) String[] columnKeys
+=======
+                                    @RequestParam(required = false) String weight,
+                                    @ApiParam("借款资格")
+                                    @RequestParam(name = "columnKeys", required = false) String[] columnKeys,
+                                    @ApiParam("是否置顶")
+                                    @RequestParam(required = false) Boolean isTop
+>>>>>>> Stashed changes
                             ) {
         Product product = new Product();
         
@@ -423,13 +441,8 @@ public class ProductController {
 //        }
         
         // 判断是否置顶
-//        product.setWeight(0);
-        if (weight != null) {
-            ProductExample example = new ProductExample();
-            example.setOrderByClause(" weight desc ");
-            List<Product> list = productMapper.selectByExample(example);
-            Integer bigestWeight = list.get(0).getWeight();
-            product.setWeight(bigestWeight + 1);
+        if (isTop != null && isTop) {
+            productService.bringToTop(product);
         }
         
         product.setLightTitle("");

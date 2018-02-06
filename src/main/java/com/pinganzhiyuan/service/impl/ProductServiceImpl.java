@@ -374,5 +374,13 @@ public class ProductServiceImpl implements ProductService {
         
         return HttpServletResponse.SC_OK;
     }
+    
+    public void bringToTop(Product product) {
+        ProductExample example = new ProductExample();
+        example.setOrderByClause(" weight desc ");
+        List<Product> list = productMapper.selectByExample(example);
+        Integer bigestWeight = list.get(0).getWeight();
+        product.setWeight(bigestWeight + 1);
+    }
 
 }
