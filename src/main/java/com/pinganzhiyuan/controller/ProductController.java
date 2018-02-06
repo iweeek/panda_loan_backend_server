@@ -30,17 +30,24 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pinganzhiyuan.dto.PageDTO;
 import com.pinganzhiyuan.dto.ProductDTO;
+import com.pinganzhiyuan.mapper.ColumnMapper;
 import com.pinganzhiyuan.mapper.GuaranteeMapper;
 import com.pinganzhiyuan.mapper.GuaranteeProductMappingMapper;
+import com.pinganzhiyuan.mapper.ProductColumnMappingMapper;
 import com.pinganzhiyuan.mapper.ProductMapper;
+import com.pinganzhiyuan.model.Column;
 import com.pinganzhiyuan.model.Guarantee;
 import com.pinganzhiyuan.model.GuaranteeProductMapping;
 import com.pinganzhiyuan.model.Product;
+import com.pinganzhiyuan.model.ProductColumnMapping;
+import com.pinganzhiyuan.model.ProductColumnMappingExample;
 import com.pinganzhiyuan.model.ProductExample;
+import com.pinganzhiyuan.service.ProductColumnMappingService;
 import com.pinganzhiyuan.service.ProductService;
 import com.pinganzhiyuan.util.FileUtil;
 import com.pinganzhiyuan.util.PathUtil;
 import com.pinganzhiyuan.util.ResponseBody;
+import com.pinganzhiyuan.util.RetMsgTemplate;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -53,6 +60,15 @@ public class ProductController {
     @Autowired
     private ProductService productService;
     
+    @Autowired 
+    private ProductColumnMappingService productColumnMappingService;
+    
+    @Autowired 
+    private ProductColumnMappingMapper productColumnMappingMapper;
+    
+    @Autowired 
+    private ColumnMapper columnMapper;
+    
     @Autowired
     private ProductMapper productMapper;
     
@@ -61,6 +77,8 @@ public class ProductController {
     
     @Autowired
     private GuaranteeProductMappingMapper guaranteeProductMappingMapper;
+    
+    
    
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
     
@@ -102,7 +120,9 @@ public class ProductController {
                             @ApiParam("产品日利率")
                             @RequestParam String dayRate,
                             @ApiParam("借款资格")
-                            @RequestParam(name = "guarantees", required = false) String[] guarantees
+                            @RequestParam(name = "guarantees", required = false) String[] guarantees,
+                            @ApiParam("借款资格")
+                            @RequestParam(name = "columnKeys", required = false) String[] columnKeys
                             ) {
         
         Product product = new Product();
@@ -253,6 +273,7 @@ public class ProductController {
         
         ResponseBody resBody = new ResponseBody<Product>();
         
+        // 插入成功，product.getId() 取到插入后的Id
         int status = productService.create(product, resBody);
         
         if (guarantees != null && guarantees.length != 0) {
@@ -273,6 +294,14 @@ public class ProductController {
                 }
                 
             }
+        }
+        
+        ProductColumnMapping mapping = new ProductColumnMapping();
+        // 更新 column_product_mapping 表
+        for (String key : columnKeys) {
+            mapping.setColumnKey(key);
+            mapping.setProductId(product.getId());
+            productColumnMappingService.create(mapping);
         }
         
         return ResponseEntity.status(status).body(resBody);
@@ -346,19 +375,11 @@ public class ProductController {
                                     @ApiParam("借款资格")
                                     @RequestParam(name = "guarantees", required = false) String[] guarantees,
                                     @ApiParam("权重")
-<<<<<<< Updated upstream
-                                    @RequestParam(required = false) String weight
-||||||| merged common ancestors
                                     @RequestParam(required = false) String weight,
+                                    @ApiParam("是否置顶")
+                                    @RequestParam(required = false) Boolean isTop,
                                     @ApiParam("借款资格")
                                     @RequestParam(name = "columnKeys", required = false) String[] columnKeys
-=======
-                                    @RequestParam(required = false) String weight,
-                                    @ApiParam("借款资格")
-                                    @RequestParam(name = "columnKeys", required = false) String[] columnKeys,
-                                    @ApiParam("是否置顶")
-                                    @RequestParam(required = false) Boolean isTop
->>>>>>> Stashed changes
                             ) {
         Product product = new Product();
         
@@ -517,6 +538,24 @@ public class ProductController {
                         }
                     }
                 }
+            }
+        }
+        if (columnKeys != null && columnKeys.length != 0) {
+            // 先删除所有的映射记录
+            ProductColumnMappingExample example = new ProductColumnMappingExample();
+            example.createCriteria().andProductIdEqualTo(product.getId());
+            List<ProductColumnMapping> deleteList = productColumnMappingMapper.selectByExample(example);
+            for (ProductColumnMapping mapping : deleteList) {
+                productColumnMappingMapper.deleteByPrimaryKey(mapping.getId());
+                System.out.println("删除产品栏位映射成功+++   " + mapping.getId());
+            }
+            
+            ProductColumnMapping mapping = new ProductColumnMapping();
+            // 重新插入
+            for (String key : columnKeys) {
+                mapping.setColumnKey(key);
+                mapping.setProductId(product.getId());
+                productColumnMappingService.create(mapping);
             }
         }
         
@@ -684,6 +723,7 @@ public class ProductController {
             // obj2：返回带有最高权重值的产品ID
             resBody.obj2 = weightList.get(0).getId();
         }
+        
             
         return ResponseEntity.status(HttpServletResponse.SC_OK).body(resBody); 
     }
@@ -699,13 +739,24 @@ public class ProductController {
         List<ProductDTO> dtos = new ArrayList<>();
         for (Product product : list) {
             ProductDTO dto = new ProductDTO(product);
-            
+            // TODOs
             List<Guarantee> guaranteeList = guaranteeMapper.selectByProductId(product.getId());
             List<String> g = new ArrayList<>();
             for (Guarantee guarantee : guaranteeList) {
                 g.add(guarantee.getCreditGuarantee());
             }
             dto.setGuarantees(g);
+            
+            // 获取栏位
+            
+            ProductColumnMappingExample example = new ProductColumnMappingExample();
+            example.createCriteria().andProductIdEqualTo(product.getId());
+            // 关联product_column_mapping 与 column表
+            List<Column> columns = columnMapper.selectByProductId(product.getId());
+            if (columns.size() > 0) {
+                dto.setColumns(columns);
+            }
+            
             dtos.add(dto);
         }
         
