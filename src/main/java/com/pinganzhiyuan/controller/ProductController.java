@@ -11,13 +11,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -122,7 +119,11 @@ public class ProductController {
                             @ApiParam("借款资格")
                             @RequestParam(name = "guarantees", required = false) String[] guarantees,
                             @ApiParam("借款资格")
-                            @RequestParam(name = "columnKeys", required = false) String[] columnKeys
+                            @RequestParam(name = "columnKeys", required = false) String[] columnKeys,
+                            @ApiParam("发布到的APP名字列表")
+                            @RequestParam(name = "appNames", required = false) String[] appNames,
+                            @ApiParam("发布到的渠道列表")
+                            @RequestParam(name = "channelNames", required = false) String[] channelNames
                             ) {
         
         Product product = new Product();
@@ -140,6 +141,8 @@ public class ProductController {
         
         if (isTop != null && isTop) {
             productService.bringToTop(product);
+        } else {
+            product.setWeight(0);
         }
         
         // 拼接标签
@@ -215,7 +218,6 @@ public class ProductController {
             product.setUrl("");
         }
         
-        product.setWeight(0);
         product.setLightTitle("");
         product.setEdu("");
         
@@ -788,6 +790,8 @@ public class ProductController {
         return ResponseEntity.status(status).body(resBody);
     }
     
+    
+   
     public static void main(String[] args) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         long st = Long.parseLong("1516867278000");
