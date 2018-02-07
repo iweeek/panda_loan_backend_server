@@ -27,11 +27,13 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pinganzhiyuan.dto.PageDTO;
 import com.pinganzhiyuan.dto.ProductDTO;
+import com.pinganzhiyuan.mapper.AppClientMapper;
 import com.pinganzhiyuan.mapper.ColumnMapper;
 import com.pinganzhiyuan.mapper.GuaranteeMapper;
 import com.pinganzhiyuan.mapper.GuaranteeProductMappingMapper;
 import com.pinganzhiyuan.mapper.ProductColumnMappingMapper;
 import com.pinganzhiyuan.mapper.ProductMapper;
+import com.pinganzhiyuan.model.AppClient;
 import com.pinganzhiyuan.model.Column;
 import com.pinganzhiyuan.model.Guarantee;
 import com.pinganzhiyuan.model.GuaranteeProductMapping;
@@ -39,6 +41,7 @@ import com.pinganzhiyuan.model.Product;
 import com.pinganzhiyuan.model.ProductColumnMapping;
 import com.pinganzhiyuan.model.ProductColumnMappingExample;
 import com.pinganzhiyuan.model.ProductExample;
+import com.pinganzhiyuan.service.AppClientService;
 import com.pinganzhiyuan.service.ProductColumnMappingService;
 import com.pinganzhiyuan.service.ProductService;
 import com.pinganzhiyuan.util.FileUtil;
@@ -68,6 +71,9 @@ public class ProductController {
     
     @Autowired
     private ProductMapper productMapper;
+    
+    @Autowired
+    private AppClientMapper appClientMapper;
     
     @Autowired
     private GuaranteeMapper guaranteeMapper;
@@ -146,13 +152,13 @@ public class ProductController {
         }
         
         // 拼接标签
-        StringBuilder sb = new StringBuilder();
+        StringBuilder tagBuilder = new StringBuilder();
         if (firstTags != null && firstTags.length > 0) {
             for (String tag : firstTags) {
-                sb.append(tag + "|");
+                tagBuilder.append(tag + "|");
             }
             // 去掉最后一个 “|”
-            product.setFirstTags(sb.substring(0, sb.toString().length() - 1));
+            product.setFirstTags(tagBuilder.substring(0, tagBuilder.toString().length() - 1));
         } else {
             product.setFirstTags("");
         }
@@ -244,13 +250,9 @@ public class ProductController {
         } else {
             product.setMaxTerm(0);
         }
-//        if (lowInterest != null) {
-            product.setLowInterest((double) 0);
-//        }
-//        if (highInterest != null) {
-            product.setHighInterest((double) 0);
-//        }
         
+        product.setLowInterest((double) 0);
+        product.setHighInterest((double) 0);
         product.setCreditAuth("");
         
         if (lenderName != null) {
@@ -275,9 +277,44 @@ public class ProductController {
         
         ResponseBody resBody = new ResponseBody<Product>();
         
+        // 更新发布到的APP以及渠道的 aid 到 product 表的 ap|p_id
+        // 暂时还没有找到如何在mybatis中，in的 数组 传递形式。这个要研究一下
+        if (appNames != null && channelNames != null) {
+            StringBuilder appBuilder = new StringBuilder();
+            appBuilder.append("select a.id as id, a.name, \n" + 
+                    "a.package_name, a.channel_id, b.`name` as channel_name \n" + 
+                    "from app_client a join channel b on a.channel_id = b.id\n" +
+                    " where a.name in (");
+            
+            for (String appName : appNames) {
+                appBuilder.append("'" + appName + "',");
+            }
+            appBuilder = appBuilder.delete(
+                    appBuilder.toString().length() - 1, appBuilder.toString().length()).append(") ");
+            // 要确保至少有一个渠道被选中
+            appBuilder.append(" and b.`name` in (");
+            for (String channelName : channelNames) {
+                appBuilder.append("'" + channelName + "',");
+            }
+            appBuilder = appBuilder.delete(
+                    appBuilder.toString().length() - 1, appBuilder.toString().length()).append(") ");
+            
+            // 执行
+            List<AppClient> publishAppAndChannel = 
+                    appClientMapper.selectByAppNamesAndChannelNames(appBuilder.toString());
+            StringBuilder appClientIds  = new StringBuilder();
+            for (AppClient client : publishAppAndChannel) {
+                appClientIds.append(client.getId() + ",");
+            }
+            appClientIds = appClientIds.delete(appClientIds.toString().length() - 1, appClientIds.toString().length());
+            
+            product.setAppClientIds(appClientIds.toString());
+        }
+        
         // 插入成功，product.getId() 取到插入后的Id
         int status = productService.create(product, resBody);
         
+        // 借款资格
         if (guarantees != null && guarantees.length != 0) {
             List<Guarantee> guaranteeList = guaranteeMapper.selectByExample(null);
             for (String lq : guarantees) {
@@ -299,11 +336,13 @@ public class ProductController {
         }
         
         ProductColumnMapping mapping = new ProductColumnMapping();
-        // 更新 column_product_mapping 表
-        for (String key : columnKeys) {
-            mapping.setColumnKey(key);
-            mapping.setProductId(product.getId());
-            productColumnMappingService.create(mapping);
+        // 更新产品栏位映射表
+        if (columnKeys != null && columnKeys.length != 0) {
+            for (String key : columnKeys) {
+                mapping.setColumnKey(key);
+                mapping.setProductId(product.getId());
+                productColumnMappingService.create(mapping);
+            }
         }
         
         return ResponseEntity.status(status).body(resBody);
@@ -381,7 +420,11 @@ public class ProductController {
                                     @ApiParam("是否置顶")
                                     @RequestParam(required = false) Boolean isTop,
                                     @ApiParam("借款资格")
-                                    @RequestParam(name = "columnKeys", required = false) String[] columnKeys
+                                    @RequestParam(name = "columnKeys", required = false) String[] columnKeys,
+                                    @ApiParam("发布到的APP名字列表")
+                                    @RequestParam(name = "appNames", required = false) String[] appNames,
+                                    @ApiParam("发布到的渠道列表")
+                                    @RequestParam(name = "channelNames", required = false) String[] channelNames
                             ) {
         Product product = new Product();
         
@@ -512,6 +555,40 @@ public class ProductController {
 //        if (loanWaitTime != null) {
             product.setLoanWaitTime(0);
 //        }
+            
+         // 更新发布到的APP以及渠道的 aid 到 product 表的 ap|p_id
+        // 暂时还没有找到如何在mybatis中，in的 数组 传递形式。这个要研究一下
+        if (appNames != null && channelNames != null) {
+            StringBuilder appBuilder = new StringBuilder();
+            appBuilder.append("select a.id as id, a.name, \n" + 
+                    "a.package_name, a.channel_id, b.`name` as channel_name \n" + 
+                    "from app_client a join channel b on a.channel_id = b.id\n" +
+                    " where a.name in (");
+            
+            for (String appName : appNames) {
+                appBuilder.append("'" + appName + "',");
+            }
+            appBuilder = appBuilder.delete(
+                    appBuilder.toString().length() - 1, appBuilder.toString().length()).append(") ");
+            // 要确保至少有一个渠道被选中
+            appBuilder.append(" and b.`name` in (");
+            for (String channelName : channelNames) {
+                appBuilder.append("'" + channelName + "',");
+            }
+            appBuilder = appBuilder.delete(
+                    appBuilder.toString().length() - 1, appBuilder.toString().length()).append(") ");
+            
+            // 执行
+            List<AppClient> publishAppAndChannel = 
+                    appClientMapper.selectByAppNamesAndChannelNames(appBuilder.toString());
+            StringBuilder appClientIds  = new StringBuilder();
+            for (AppClient client : publishAppAndChannel) {
+                appClientIds.append(client.getId() + ",");
+            }
+            appClientIds = appClientIds.delete(appClientIds.toString().length() - 1, appClientIds.toString().length());
+            
+            product.setAppClientIds(appClientIds.toString());
+        }
         
         ResponseBody resBody = new ResponseBody<Product>();
         
