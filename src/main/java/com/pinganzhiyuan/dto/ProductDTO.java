@@ -5,6 +5,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -616,6 +617,25 @@ public class ProductDTO {
 
     public void setColumns(List<Column> columns) {
         this.columns = columns;
+    }
+    
+    private Set<String> appNames;
+    private Set<String> channelNames;
+
+    public Set<String> getAppNames() {
+        return appNames;
+    }
+
+    public void setAppNames(Set<String> appNames) {
+        this.appNames = appNames;
+    }
+
+    public Set<String> getChannelNames() {
+        return channelNames;
+    }
+
+    public void setChannelNames(Set<String> channelNames) {
+        this.channelNames = channelNames;
     }
 
     public ProductDTO(Product product) {

@@ -4,7 +4,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,9 +21,11 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pinganzhiyuan.dto.PageDTO;
 import com.pinganzhiyuan.dto.ProductDTO;
+import com.pinganzhiyuan.mapper.AppClientMapper;
 import com.pinganzhiyuan.mapper.GuaranteeMapper;
 import com.pinganzhiyuan.mapper.GuaranteeProductMappingMapper;
 import com.pinganzhiyuan.mapper.ProductMapper;
+import com.pinganzhiyuan.model.AppClient;
 import com.pinganzhiyuan.model.Guarantee;
 import com.pinganzhiyuan.model.GuaranteeProductMapping;
 import com.pinganzhiyuan.model.GuaranteeProductMappingExample;
@@ -49,6 +53,9 @@ public class ProductServiceImpl implements ProductService {
 	
 	@Autowired
 	private GuaranteeMapper guaranteeMapper;
+	
+    @Autowired
+    private AppClientMapper appClientMapper;
 	
     @Autowired
     private GuaranteeProductMappingMapper guaranteeProductMappingMapper;
@@ -115,6 +122,7 @@ public class ProductServiceImpl implements ProductService {
 		if (list.size() > 0) {
 		    ProductDTO dto = new ProductDTO(list.get(0));
 		    
+		    // 贷款资格数组
 		    List<Guarantee> guaranteeList = guaranteeMapper.selectByProductId(product.getId());
 		    List<String> guarantees = new ArrayList<>();
 		    for (Guarantee guarantee : guaranteeList) {
@@ -122,6 +130,23 @@ public class ProductServiceImpl implements ProductService {
 		    }
 		    dto.setGuarantees(guarantees);
 		    
+		    // 发布到的APP及渠道
+		    Set<String> appNames = new HashSet<String>();
+	        Set<String> channelNames = new HashSet<String>();
+		    String appClientIdString = list.get(0).getAppClientIds();
+		    if (appClientIdString != null) {
+		        List<AppClient> appClients = appClientMapper.selectSingleProductWithChannel(appClientIdString);
+		        if (appClients != null && appClients.size() != 0) {
+	                for (AppClient appClient : appClients) {
+	                    appNames.add(appClient.getName());
+	                    channelNames.add(appClient.getChannelName());
+	                }
+	                System.out.println("appNames:" + appNames);
+	                System.out.println("channelNames:" + channelNames);
+	                dto.setAppNames(appNames);
+	                dto.setChannelNames(channelNames);
+	            }
+		    }
 			logMsg = RetMsgTemplate.MSG_TEMPLATE_OPERATION_OK;
 			logger.info(logMsg);
 			
@@ -382,5 +407,5 @@ public class ProductServiceImpl implements ProductService {
         Integer bigestWeight = list.get(0).getWeight();
         product.setWeight(bigestWeight + 1);
     }
-
+    
 }

@@ -7,7 +7,9 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -827,13 +829,30 @@ public class ProductController {
             dto.setGuarantees(g);
             
             // 获取栏位
-            
             ProductColumnMappingExample example = new ProductColumnMappingExample();
             example.createCriteria().andProductIdEqualTo(product.getId());
             // 关联product_column_mapping 与 column表
             List<Column> columns = columnMapper.selectByProductId(product.getId());
             if (columns.size() > 0) {
                 dto.setColumns(columns);
+            }
+            
+            // 发布到的APP及渠道
+            Set<String> appNames = new HashSet<String>();
+            Set<String> channelNames = new HashSet<String>();
+            String appClientIdString = product.getAppClientIds();
+            if (appClientIdString != null) {
+                List<AppClient> appClients = appClientMapper.selectSingleProductWithChannel(appClientIdString);
+                if (appClients != null && appClients.size() != 0) {
+                    for (AppClient appClient : appClients) {
+                        appNames.add(appClient.getName());
+                        channelNames.add(appClient.getChannelName());
+                    }
+                    System.out.println("appNames:" + appNames);
+                    System.out.println("channelNames:" + channelNames);
+                    dto.setAppNames(appNames);
+                    dto.setChannelNames(channelNames);
+                }
             }
             
             dtos.add(dto);

@@ -137,6 +137,19 @@ public interface AppClientMapper {
     @ResultMap("com.pinganzhiyuan.mapper.AppClientMapper.BaseResultMap")
     List<AppClient> selectAllWithChannel();
     
+    /**
+     * 查询当个产品的发布到的app+渠道的记录
+     * @return
+     */
+    @Select({
+        "select a.id as id, a.name, \n" + 
+        "a.package_name, a.channel_id, b.`name` as channel_name \n" + 
+        "from app_client a join channel b on a.channel_id = b.id\n" + 
+        "where a.id in (${appIds});"
+    })
+    @ResultMap("com.pinganzhiyuan.mapper.AppClientMapper.BaseResultMap")
+    List<AppClient> selectSingleProductWithChannel(@Param("appIds") String appIds);
+    
     @Select({ "${queryString}" })
     @ResultMap("com.pinganzhiyuan.mapper.AppClientMapper.BaseResultMap")
     List<AppClient> selectByAppNamesAndChannelNames(@Param("queryString") String queryString);
