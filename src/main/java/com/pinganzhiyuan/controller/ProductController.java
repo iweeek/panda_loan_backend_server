@@ -513,8 +513,8 @@ public class ProductController {
             productService.bringToTop(product);
         }
         
-        product.setLightTitle("");
-        product.setEdu("");
+//        product.setLightTitle("");
+//        product.setEdu("");
         
         if (minAmount != null) {
             product.setMinAmount(minAmount);
@@ -532,30 +532,30 @@ public class ProductController {
             product.setMaxTerm(maxTerm);
         }
 //        if (lowInterest != null) {
-            product.setLowInterest((double) 0);
+//            product.setLowInterest((double) 0);
 //        }
 //        if (highInterest != null) {
-            product.setHighInterest((double) 0);
+//            product.setHighInterest((double) 0);
 //        }
         
-        product.setCreditAuth("");
+//        product.setCreditAuth("");
         
         if (lenderName != null) {
             product.setLenderName(lenderName);
         }
      
-        product.setLenderDesc("");
-        product.setActiveCaptchaUrl("");
-        product.setRegInterfaceUrl("");
+//        product.setLenderDesc("");
+//        product.setActiveCaptchaUrl("");
+//        product.setRegInterfaceUrl("");
         
-        product.setDisplayType((byte) 0);
-        product.setChargeModeId((long) 0);
+//        product.setDisplayType((byte) 0);
+//        product.setChargeModeId((long) 0);
         
 //        if (applyTimes != null) {
-            product.setApplyTimes(0);
+//            product.setApplyTimes(0);
 //        }
 //        if (loanWaitTime != null) {
-            product.setLoanWaitTime(0);
+//            product.setLoanWaitTime(0);
 //        }
             
          // 更新发布到的APP以及渠道的 aid 到 product 表的 ap|p_id
