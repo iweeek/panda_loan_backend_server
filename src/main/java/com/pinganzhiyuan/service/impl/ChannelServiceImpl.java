@@ -33,4 +33,16 @@ public class ChannelServiceImpl implements ChannelService {
         return HttpServletResponse.SC_NOT_FOUND;
     }
 
+	@Override
+	public int indexChannelByAppName(String appName, ResponseBody resBody) {
+		List<Channel> list = channelMapper.selectByAppName(appName);
+		
+		if (list != null && list.size() != 0) {
+            resBody.statusMsg = "查询成功";
+            resBody.obj1 = list;
+            return HttpServletResponse.SC_OK;
+        }
+        return HttpServletResponse.SC_NOT_FOUND;
+	}
+
 }

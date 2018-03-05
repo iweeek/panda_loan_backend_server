@@ -78,4 +78,19 @@ public class ChannelController {
         
         return ResponseEntity.status(status).body(resBody); 
     }
+    
+    @SuppressWarnings("rawtypes")
+    @ApiOperation(value = "根据AppName获取Channel", notes = "")
+    @RequestMapping(value = "/channelsByAppName", method = RequestMethod.POST, produces="application/json;charset=UTF-8") 
+    public ResponseEntity<?> channelsByAppName(HttpServletResponse response, 
+						    		 @ApiParam("AppName")
+						    		 @RequestParam("appName") String appName
+                                    ) {
+        ResponseBody resBody = new ResponseBody<Product>();
+        
+        int status = channelService.indexChannelByAppName(appName, resBody);
+        
+        return ResponseEntity.status(status).body(resBody); 
+    }
+    
 }

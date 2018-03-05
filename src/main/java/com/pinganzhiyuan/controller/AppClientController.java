@@ -35,6 +35,7 @@ import com.pinganzhiyuan.mapper.GuaranteeMapper;
 import com.pinganzhiyuan.mapper.GuaranteeProductMappingMapper;
 import com.pinganzhiyuan.mapper.ProductMapper;
 import com.pinganzhiyuan.model.AppClient;
+import com.pinganzhiyuan.model.Channel;
 import com.pinganzhiyuan.model.Column;
 import com.pinganzhiyuan.model.Guarantee;
 import com.pinganzhiyuan.model.GuaranteeProductMapping;
@@ -72,6 +73,18 @@ public class AppClientController {
         
         int status = appClientService.index(list, resBody);
         
+        return ResponseEntity.status(status).body(resBody); 
+    }
+    
+    @SuppressWarnings("rawtypes")
+    @ApiOperation(value = "根据ChannelId获取AppName", notes = "")
+    @RequestMapping(value = "/appClientsByChannel", method = RequestMethod.POST, produces="application/json;charset=UTF-8") 
+    public ResponseEntity<?> channelsByAppName(HttpServletResponse response, 
+						    		 @ApiParam("渠道")
+						    		 @RequestParam("channelId") String channelId
+                                    ) {
+        ResponseBody resBody = new ResponseBody<Product>();
+        int status = appClientService.indexAppClientByChannelId(channelId, resBody);
         return ResponseEntity.status(status).body(resBody); 
     }
 }

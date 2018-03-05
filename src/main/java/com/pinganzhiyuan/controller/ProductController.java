@@ -350,6 +350,7 @@ public class ProductController {
         return ResponseEntity.status(status).body(resBody);
     }
     
+    /* 移动到 FileUtil 中
     @RequestMapping(value = { "/uploadImage" }, method = RequestMethod.POST)
     public ResponseEntity<?> uploadImage(@ApiParam("图片") @RequestParam MultipartFile image) {
         String imagePath = "";
@@ -364,6 +365,7 @@ public class ProductController {
 //        imageUrl = File.separator + imagePath;
         return ResponseEntity.status(HttpServletResponse.SC_CREATED).body(imageUrl);
     }
+    */
     
     @RequiresPermissions("product:read")
     @SuppressWarnings("rawtypes")
@@ -651,7 +653,7 @@ public class ProductController {
                                     @ApiParam("页码")
                                     @RequestParam(required = false, defaultValue = "1") int pageNumber,
                                     @ApiParam("每页多少条")
-                                    @RequestParam(required = false, defaultValue = "10") int pageSize
+                                    @RequestParam(required = false, defaultValue = "30") int pageSize
                                     ) {
         List<Product> list = new ArrayList<Product>();
         
@@ -697,7 +699,7 @@ public class ProductController {
                                     @ApiParam("页码")
                                     @RequestParam(required = false, defaultValue = "1") int pageNumber,
                                     @ApiParam("每页多少条")
-                                    @RequestParam(required = false, defaultValue = "10") int pageSize
+                                    @RequestParam(required = false, defaultValue = "30") int pageSize
                                     ) {
         List<Product> list = null;
         
