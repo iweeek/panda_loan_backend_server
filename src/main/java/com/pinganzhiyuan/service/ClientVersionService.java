@@ -4,6 +4,7 @@ package com.pinganzhiyuan.service;
 import java.util.List;
 
 import com.pinganzhiyuan.model.ClientVersion;
+import com.pinganzhiyuan.model.ClientVersionExample;
 import com.pinganzhiyuan.util.ResponseBody;
 
 public interface ClientVersionService {
@@ -12,7 +13,7 @@ public interface ClientVersionService {
 
     ClientVersion getVersion(byte platformId, long channelId, String packageName, Integer versionCode);
     
-    List<ClientVersion> screen();
+//    List<ClientVersion> screen(ClientVersionExample example, Integer pageNumber, Integer pageSize);
 
 	int create(ClientVersion clientVersion, ResponseBody resBody);
 

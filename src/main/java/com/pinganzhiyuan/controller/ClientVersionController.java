@@ -47,32 +47,23 @@ public class ClientVersionController {
     @Autowired
     private AppClientService appClientService;
 	
-	/**
-     * 创建的时有默认值
-     * @return
-     */
-//    @SuppressWarnings("rawtypes")
     @ApiOperation(value = "创建版本信息", notes = "创建版本信息")
     @RequestMapping(value = "/clientVersions", method = RequestMethod.POST, produces="application/json;charset=UTF-8") 
 	public ResponseEntity<?> create(
 			@ApiParam("APP名称")
 			@RequestParam String name,
 			@ApiParam("logo")
-			@RequestParam String logoUrl,
+			@RequestParam  String logoUrl,
 			@ApiParam("版本名称")
-			@RequestParam String versionName,
+			@RequestParam  String versionName,
 			@ApiParam("版本号")
-			@RequestParam Integer versionCode,
+			@RequestParam  Integer versionCode,
 			@ApiParam("修改记录")
-			@RequestParam String changeLog,
-//			@ApiParam("是否强制")
-//			@RequestParam Boolean isForced,
-//			@ApiParam("客户端平台Id，0：Android，1：iOS")
-//			@RequestParam Byte platformId,
+			@RequestParam(required = false)  String changeLog,
 			@ApiParam("下载地址")
-			@RequestParam String downloadUrl,
+			@RequestParam(required = false)  String downloadUrl,
 			@ApiParam("包名")
-			@RequestParam String packageName,
+			@RequestParam  String packageName,
 			@ApiParam("渠道ID")
 			@RequestParam Long channelId)
 								{
@@ -110,30 +101,22 @@ public class ClientVersionController {
 			@ApiParam("id")
             @PathVariable long id,
 			@ApiParam("APP名称")
-			@RequestParam String name,
+			@RequestParam(required = false)  String name,
 			@ApiParam("logo")
-			@RequestParam String logoUrl,
+			@RequestParam(required = false)  String logoUrl,
 			@ApiParam("版本名称")
-			@RequestParam String versionName,
+			@RequestParam(required = false)  String versionName,
 			@ApiParam("版本号")
-			@RequestParam Integer versionCode,
+			@RequestParam(required = false)  Integer versionCode,
 			@ApiParam("修改记录")
 			@RequestParam String changeLog,
-//			@ApiParam("是否强制")
-//			@RequestParam Boolean isForced,
-//			@ApiParam("客户端平台Id，0：Android，1：iOS")
-//			@RequestParam Byte platformId,
 			@ApiParam("下载地址")
-			@RequestParam String downloadUrl,
+			@RequestParam(required = false)  String downloadUrl,
 			@ApiParam("包名")
-			@RequestParam String packageName,
+			@RequestParam(required = false)  String packageName,
 			@ApiParam("渠道ID")
-			@RequestParam Long channelId)
+			@RequestParam(required = false)  Long channelId)
 								{
-//		if (platformId != null && platformId != 0 && platformId != 1) {
-//			return ResponseEntity.status(HttpServletResponse.SC_BAD_REQUEST).build();
-//		}
-		
 		ClientVersion info = new ClientVersion();
 		info.setId(id);
 		

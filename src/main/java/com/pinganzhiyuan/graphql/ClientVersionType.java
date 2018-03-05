@@ -1,14 +1,23 @@
 package com.pinganzhiyuan.graphql;
 
+import java.awt.Panel;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.pinganzhiyuan.mapper.AppClientMapper;
+import com.pinganzhiyuan.mapper.ChannelMapper;
+import com.pinganzhiyuan.mapper.ClientVersionMapper;
+import com.pinganzhiyuan.model.AppClient;
 import com.pinganzhiyuan.model.ClientVersion;
 import com.pinganzhiyuan.model.ClientVersionExample;
+import com.pinganzhiyuan.model.Product;
 import com.pinganzhiyuan.model.ClientVersionExample.Criteria;
+import com.pinganzhiyuan.service.AppClientService;
+import com.pinganzhiyuan.service.ChannelService;
 import com.pinganzhiyuan.service.ClientVersionService;
 
 import graphql.Scalars;
@@ -21,8 +30,12 @@ import graphql.schema.GraphQLObjectType;
 public class ClientVersionType {
 
 	private static ClientVersionService clientVersionService;
+	private static AppClientMapper appClientMapper;
+	private static ChannelMapper channelMapper;
+	private static ClientVersionMapper clientVersionMapper;
+	
 	private static GraphQLObjectType type;
-	private static GraphQLFieldDefinition latestVerisonQueryField;
+	private static GraphQLFieldDefinition cascadeQueryField;
 	private static GraphQLFieldDefinition verisonMaskQueryField;
 	
 	public static GraphQLObjectType getType() {
@@ -80,123 +93,62 @@ public class ClientVersionType {
                             .type(Scalars.GraphQLBoolean)
                             .description("遮挡层开关")
                             .build())
+					.field(GraphQLFieldDefinition.newFieldDefinition()
+                            .name("channelId")
+                            .type(Scalars.GraphQLString)
+                            .description("渠道Id")
+                            .build())
+					.field(GraphQLFieldDefinition.newFieldDefinition()
+                            .name("channelName")
+                            .type(Scalars.GraphQLString)
+                            .description("渠道名称")
+                            .build())
+					.field(GraphQLFieldDefinition.newFieldDefinition()
+							.name("packageName")
+							.type(Scalars.GraphQLString)
+							.description("包名")
+							.build())
 					.build();
 		}
-		
 		return type;
 	}
 	
-//	public static GraphQLFieldDefinition getLatestVerisonQueryField() {
-//		if(latestVerisonQueryField == null) {
-//			latestVerisonQueryField = GraphQLFieldDefinition.newFieldDefinition()
-//					.argument(GraphQLArgument.newArgument().name("platformId").type(Scalars.GraphQLByte).build())
-//					.argument(GraphQLArgument.newArgument().name("channelId").type(Scalars.GraphQLInt).build())
-//					.argument(GraphQLArgument.newArgument().name("packageName").type(Scalars.GraphQLString).build())
-//	                .name("latestVersion")
-//	                .description("获取客户端最新版本信息")
-//	                .type(getType())
-//	                .dataFetcher(environment ->  {
-//	                	byte platformId = environment.getArgument("platformId");
-//	                	int channelId = environment.getArgument("channelId");
-//	                	String packageName = environment.getArgument("packageName");
-//	                	return clientVersionService.getLatestVersionInfo(platformId, channelId, packageName);
-//	                } ).build();
-//		}
-//        return latestVerisonQueryField;
-//    }
-//	public static GraphQLFieldDefinition getLatestVerisonQueryField() {
-//		if(latestVerisonQueryField == null) {
-//			latestVerisonQueryField = GraphQLFieldDefinition.newFieldDefinition()
-//					.argument(GraphQLArgument.newArgument().name("platformId").type(Scalars.GraphQLByte).build())
-//					.argument(GraphQLArgument.newArgument().name("channelId").type(Scalars.GraphQLInt).build())
-//					.argument(GraphQLArgument.newArgument().name("packageName").type(Scalars.GraphQLString).build())
-//	                .name("latestVersion")
-//	                .description("获取客户端最新版本信息")
-//	                .type(getType())
-//	                .dataFetcher(environment ->  {
-//	                	byte platformId = environment.getArgument("platformId");
-//	                	int channelId = environment.getArgument("channelId");
-//	                	String packageName = environment.getArgument("packageName");
-//	                	return clientVersionService.getLatestVersionInfo(platformId, channelId, packageName);
-//	                } ).build();
-//		}
-//        return latestVerisonQueryField;
-//    }
-//	public static GraphQLFieldDefinition getLatestVerisonQueryField() {
-//		if(latestVerisonQueryField == null) {
-//			latestVerisonQueryField = GraphQLFieldDefinition.newFieldDefinition()
-//					.argument(GraphQLArgument.newArgument().name("platformId").type(Scalars.GraphQLByte).build())
-//					.argument(GraphQLArgument.newArgument().name("channelId").type(Scalars.GraphQLInt).build())
-//					.argument(GraphQLArgument.newArgument().name("packageName").type(Scalars.GraphQLString).build())
-//	                .name("latestVersion")
-//	                .description("获取客户端最新版本信息")
-//	                .type(getType())
-//	                .dataFetcher(environment ->  {
-//	                	byte platformId = environment.getArgument("platformId");
-//	                	int channelId = environment.getArgument("channelId");
-//	                	String packageName = environment.getArgument("packageName");
-//	                	return clientVersionService.getLatestVersionInfo(platformId, channelId, packageName);
-//	                } ).build();
-//		}
-//        return latestVerisonQueryField;
-//    }
-//	public static GraphQLFieldDefinition getLatestVerisonQueryField() {
-//		if(latestVerisonQueryField == null) {
-//			latestVerisonQueryField = GraphQLFieldDefinition.newFieldDefinition()
-//					.argument(GraphQLArgument.newArgument().name("platformId").type(Scalars.GraphQLByte).build())
-//					.argument(GraphQLArgument.newArgument().name("channelId").type(Scalars.GraphQLInt).build())
-//					.argument(GraphQLArgument.newArgument().name("packageName").type(Scalars.GraphQLString).build())
-//	                .name("latestVersion")
-//	                .description("获取客户端最新版本信息")
-//	                .type(getType())
-//	                .dataFetcher(environment ->  {
-//	                	byte platformId = environment.getArgument("platformId");
-//	                	int channelId = environment.getArgument("channelId");
-//	                	String packageName = environment.getArgument("packageName");
-//	                	return clientVersionService.getLatestVersionInfo(platformId, channelId, packageName);
-//	                } ).build();
-//		}
-//        return latestVerisonQueryField;
-//    }
-//	public static GraphQLFieldDefinition getLatestVerisonQueryField() {
-//		if(latestVerisonQueryField == null) {
-//			latestVerisonQueryField = GraphQLFieldDefinition.newFieldDefinition()
-//					.argument(GraphQLArgument.newArgument().name("platformId").type(Scalars.GraphQLByte).build())
-//					.argument(GraphQLArgument.newArgument().name("channelId").type(Scalars.GraphQLInt).build())
-//					.argument(GraphQLArgument.newArgument().name("packageName").type(Scalars.GraphQLString).build())
-//	                .name("latestVersion")
-//	                .description("获取客户端最新版本信息")
-//	                .type(getType())
-//	                .dataFetcher(environment ->  {
-//	                	byte platformId = environment.getArgument("platformId");
-//	                	int channelId = environment.getArgument("channelId");
-//	                	String packageName = environment.getArgument("packageName");
-//	                	return clientVersionService.getLatestVersionInfo(platformId, channelId, packageName);
-//	                } ).build();
-//		}
-//        return latestVerisonQueryField;
-//    }
-	
-//   public static GraphQLFieldDefinition getVerisonQueryField() {
-//        if(verisonMaskQueryField == null) {
-//            verisonMaskQueryField = GraphQLFieldDefinition.newFieldDefinition()
-//                    .argument(GraphQLArgument.newArgument().name("platformId").type(Scalars.GraphQLByte).build())
-//                    .argument(GraphQLArgument.newArgument().name("channelId").type(Scalars.GraphQLInt).build())
-//                    .argument(GraphQLArgument.newArgument().name("packageName").type(Scalars.GraphQLString).build())
-//                    .argument(GraphQLArgument.newArgument().name("versionCode").type(Scalars.GraphQLInt).build())
-//                    .name("version")
-//                    .description("获取某个版本信息")
-//                    .type(getType())
-//                    .dataFetcher(environment ->  {
-//                        byte platformId = environment.getArgument("platformId");
-//                        int channelId = environment.getArgument("channelId");
-//                        String packageName = environment.getArgument("packageName");
-//                        int versionCode = environment.getArgument("versionCode");
-//                        return clientVersionService.getVersion(platformId, channelId, packageName, versionCode);
-//                    } ).build();
-//        }
-//        return verisonMaskQueryField;
-//    }
+   public static GraphQLFieldDefinition getCascadeQueryField() {
+       if(cascadeQueryField == null) {
+    	   		cascadeQueryField = GraphQLFieldDefinition.newFieldDefinition()
+    	   			   .argument(GraphQLArgument.newArgument().name("appName").type(Scalars.GraphQLString).build())
+                   .argument(GraphQLArgument.newArgument().name("channelId").type(Scalars.GraphQLString).build())
+                   .argument(GraphQLArgument.newArgument().name("packageName").type(Scalars.GraphQLString).build())
+                   .name("clientVersionsCascade")
+                   .description("级联查询")
+                   .type(new GraphQLList(getType()))
+                   .dataFetcher(environment ->  {
+	            	   	   List<ClientVersion> clientVersions = null;
+	                   String channelId = environment.getArgument("channelId");
+	                   String appName = environment.getArgument("appName");
+	                   String packageName = environment.getArgument("packageName");
+	                   
+	                   if(channelId == null && appName == null && packageName == null) {
+	                	   		//查询所有
+	                	   		clientVersions = clientVersionMapper.selectByExample(null);
+	                   }
+	                   
+	                   if (channelId != null && !channelId.equals("")) {
+	                	   		clientVersions = clientVersionMapper.selectByChannelId(channelId);
+	                   }
+	                   
+	                   if (appName != null && !appName.equals("")) {
+	                	   		clientVersions = clientVersionMapper.selectChannelNameByAppName(appName);
+	                   }
+	                   
+	                   if (packageName != null && !packageName.equals("")) {
+	                	   		clientVersions = clientVersionMapper.selectByPackageName(packageName);
+	                   }
+	                   return clientVersions;
+	               } ).build();
+	   }
+	   return cascadeQueryField;
+   }
    
    public static GraphQLFieldDefinition getListQueryField() {
        if(verisonMaskQueryField == null) {
@@ -207,7 +159,10 @@ public class ClientVersionType {
                    .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
                    .name("clientVersions")
                    .description("获取某个版本信息")
-                   .type(new GraphQLList(getType()))
+                   .type(PageType.getPageTypeBuidler(getType())
+                		   .name("clientVersionPage")
+                		   .description("获取某个版本分页信息")
+                		   .build())
                    .dataFetcher(environment ->  {
                 	   	   List<ClientVersion> clientVersions = null;
                        Long channelId = environment.getArgument("channelId");
@@ -225,11 +180,8 @@ public class ClientVersionType {
                     	   		criteria.andNameEqualTo(appName);
                        }
                        
-                       if (pageNumber != null && pageSize != null) {
-                    	   		PageHelper.startPage(pageNumber, pageSize);
-                       }
-                       
-                       clientVersions = clientVersionService.screen();
+                       PageHelper.startPage(pageNumber, pageSize);
+               		   clientVersions = clientVersionMapper.selectByExample(example);
                        return clientVersions;
                    } ).build();
        }
@@ -237,8 +189,21 @@ public class ClientVersionType {
    }
 	
 	@Autowired(required = true) 
-	public void setAndroidVersionInfoService(ClientVersionService androidVersionInfoService) {
-		ClientVersionType.clientVersionService = androidVersionInfoService;
+	public void setClientVersionService(ClientVersionService clientVersionService) {
+		ClientVersionType.clientVersionService = clientVersionService;
+	}
+	
+	@Autowired(required = true) 
+	public void setAppClientMapper(AppClientMapper appClientMapper) {
+		ClientVersionType.appClientMapper = appClientMapper;
+	}
+	@Autowired(required = true) 
+	public void setChannelMapper(ChannelMapper channelMapper) {
+		ClientVersionType.channelMapper = channelMapper;
+	}
+	@Autowired(required = true) 
+	public void setClientVersionMapper(ClientVersionMapper clientVersionMapper) {
+		ClientVersionType.clientVersionMapper = clientVersionMapper;
 	}
 }
 

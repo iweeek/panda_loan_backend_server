@@ -326,4 +326,24 @@ public class ClientVersion {
 	public void setPublishTime(Date publishTime) {
 		this.publishTime = publishTime;
 	}
+	
+	private String channelName;
+
+	public String getChannelName() {
+		return channelName;
+	}
+
+	public void setChannelName(String channelName) {
+		this.channelName = channelName;
+	}
+
+	@Override
+	public String toString() {
+		return "ClientVersion [id=" + id + ", name=" + name + ", logoUrl=" + logoUrl + ", versionName=" + versionName
+				+ ", versionCode=" + versionCode + ", changeLog=" + changeLog + ", isForced=" + isForced
+				+ ", downloadUrl=" + downloadUrl + ", isPublished=" + isPublished + ", platformId=" + platformId
+				+ ", packageName=" + packageName + ", channelId=" + channelId + ", maskSwitch=" + maskSwitch
+				+ ", publishTime=" + publishTime + ", channelName=" + channelName + "]";
+	}
+
 }

@@ -1,5 +1,6 @@
 package com.pinganzhiyuan.mapper;
 
+import com.pinganzhiyuan.model.AppClient;
 import com.pinganzhiyuan.model.Channel;
 import com.pinganzhiyuan.model.ClientVersion;
 import com.pinganzhiyuan.model.ClientVersionExample;
@@ -103,14 +104,14 @@ public interface ClientVersionMapper {
 	int updateByPrimaryKey(ClientVersion record);
 
 	
-	/**
-	 * 根据包名查找
-	 * @param packageName
-	 * @return
-	 */
-	@Select({ "select * from client_version where package_name = #{packageName} group by name" })
-	@ResultMap("com.pinganzhiyuan.mapper.ClientVersionMapper.BaseResultMap")
-	List<ClientVersion> selectByPackageName(@Param("packageName") String packageName);
+//	/**
+//	 * 根据包名查找
+//	 * @param packageName
+//	 * @return
+//	 */
+//	@Select({ "select * from client_version where package_name = #{packageName} group by name" })
+//	@ResultMap("com.pinganzhiyuan.mapper.ClientVersionMapper.BaseResultMap")
+//	List<ClientVersion> selectByPackageName(@Param("packageName") String packageName);
 
 	/**
 	 * 根据AppName查找
@@ -120,5 +121,35 @@ public interface ClientVersionMapper {
 	@Select({ "select * from client_version where name = #{appName} group by package_name" })
 	@ResultMap("com.pinganzhiyuan.mapper.ClientVersionMapper.BaseResultMap")
 	List<ClientVersion> selectByAppName(@Param("appName")String appName);
+	
+	
+    /**
+     * 根据渠道获取到 appName 集合
+     * @param channelId
+     * @return
+     */
+    @Select({ "select * from client_version where channel_id = #{channelId} group by  name, package_name" })
+    @ResultMap("com.pinganzhiyuan.mapper.ClientVersionMapper.BaseResultMap")
+	List<ClientVersion> selectByChannelId(@Param("channelId") String channelId);
+    
+	/**
+	 * 根据 AppName 获取到渠道集合
+	 * @param appName
+	 * @return
+	 */
+	@Select({ "select a.*, b.name as channel_name " +
+			"from client_version a join channel b on a.channel_id = b.id " +
+			"where a.name = #{appName} group by channel_id\n" })
+	@ResultMap("com.pinganzhiyuan.mapper.ClientVersionMapper.BaseResultMap")
+	List<ClientVersion> selectChannelNameByAppName(@Param("appName") String appName);
+
+	/**
+	 * 根据包名查找。
+	 * @param packageName
+	 * @return
+	 */
+	@Select({ "select * from client_version where package_name = #{packageName} group by name" })
+	@ResultMap("com.pinganzhiyuan.mapper.ClientVersionMapper.BaseResultMap")
+	List<ClientVersion> selectByPackageName(@Param("packageName") String packageName);
 	
 }
