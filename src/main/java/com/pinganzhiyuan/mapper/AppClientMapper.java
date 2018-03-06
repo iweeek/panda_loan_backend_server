@@ -108,7 +108,9 @@ public interface AppClientMapper {
      * @return
      */
     @Select({
-        "select * from app_client group by name, package_name"
+    			"select a.id as id, a.name, \n" + 
+    	        "a.package_name, a.channel_id, b.`name` as channel_name \n" + 
+    	        "from app_client a join channel b on a.channel_id = b.id"
     })
     @ResultMap("com.pinganzhiyuan.mapper.AppClientMapper.BaseResultMap")
     List<AppClient> selectAllGroupByNameAndPackageName();
