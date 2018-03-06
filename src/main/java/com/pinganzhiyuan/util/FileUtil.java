@@ -4,11 +4,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
-
 import javax.imageio.ImageIO;
-
+import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
 
+@Controller
 public class FileUtil {
 	
 	static 	public String uploadFile(String path, MultipartFile mFile) throws IOException {
