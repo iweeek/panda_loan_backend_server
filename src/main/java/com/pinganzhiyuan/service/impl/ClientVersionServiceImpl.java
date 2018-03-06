@@ -73,7 +73,7 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
 				.andVersionCodeEqualTo(clientVersion.getVersionCode());
 		List<ClientVersion> sameRecordList = clientVersionMapper.selectByExample(example);
 		if (sameRecordList.size() != 0) {
-			logMsg = "已经存在有着相同 name、channelId、versionCode 的记录了";
+			logMsg = "已经存在有着相同 appName、channelId、versionCode 的记录了";
 			logger.error(logMsg);
 			clientVersion.setId(sameRecordList.get(0).getId());
 			resBody.statusMsg = logMsg;
@@ -93,53 +93,41 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
 
 	@Override
 	public int update(ClientVersion clientVersion, ResponseBody resBody) {
+		//判断数据是否重复
 		ClientVersionExample example = new ClientVersionExample();
-		ClientVersion c = new ClientVersion();
-		
-		// 更新发布状态，不需要判断 title 是否存在
-//		if (product.getTitle() == null) {
-//	        productMapper.updateByPrimaryKeySelective(product);
-//	        logMsg = RetMsgTemplate.MSG_TEMPLATE_OPERATION_OK;
-//            logger.info(logMsg);
-//            
-//            resBody.obj1 = product;
-//            resBody.statusMsg = logMsg; 
-//            
-//            return HttpServletResponse.SC_OK;
-//		} else {
+		example.createCriteria()
+				.andNameEqualTo(clientVersion.getName())
+				.andChannelIdEqualTo(clientVersion.getChannelId())
+				.andVersionCodeEqualTo(clientVersion.getVersionCode());
+		List<ClientVersion> sameRecordList = clientVersionMapper.selectByExample(example);
+		if (sameRecordList.size() != 0 && !sameRecordList.get(0).getId().equals(clientVersion.getId())) {
+			logMsg = "已经存在有着相同 appName、channelId、versionCode 的记录了";
+			logger.error(logMsg);
+			clientVersion.setId(sameRecordList.get(0).getId());
+			resBody.statusMsg = logMsg;
+			resBody.obj1 = clientVersion;
+			// statusCode：409 产生冲突
+			return HttpServletResponse.SC_CONFLICT;
+		} else {
 		    List<ClientVersion> list = null;
-		    // 全量更新
-//            example.createCriteria().andTitleEqualTo(product.getTitle()).andIdNotEqualTo(product.getId());
-//            List<Product> list = productMapper.selectByExample(example);
-//            // 更新需要判断该 title 是否已存在
-//            if (list.size() > 0) {
-//                logMsg = RetMsgTemplate.MSG_TEMPLATE_NAME_EXIST.replace("%s", product.getTitle());
-//        			logger.error(logMsg);
-//        			
-//        			resBody.obj1 = list.get(0);
-//        			resBody.statusMsg = logMsg; 
-//        			
-//        			return HttpServletResponse.SC_CONFLICT;
-//        		} else {
-        			example.clear();
-        			example.createCriteria().andIdEqualTo(clientVersion.getId());
-        			list = clientVersionMapper.selectByExample(example);
-        			if (list.size() > 0) {
-        				clientVersionMapper.updateByPrimaryKeySelective(clientVersion);
-        				logMsg = RetMsgTemplate.MSG_TEMPLATE_OPERATION_OK;
-        				logger.info(logMsg);
-        				resBody.obj1 = clientVersion;
-        				resBody.statusMsg = logMsg; 
-        				return HttpServletResponse.SC_OK;
-        			} else {
-        				logMsg = RetMsgTemplate.MSG_TEMPLATE_NOT_FIND_BY_ID.replace("%s", String.valueOf(clientVersion.getId()));
-        				logger.error(logMsg);
-        				resBody.obj1 = null;
-        				resBody.statusMsg = logMsg;
-        				return HttpServletResponse.SC_NOT_FOUND;
-        			}
-//        		}
-//		}
+    			example.clear();
+    			example.createCriteria().andIdEqualTo(clientVersion.getId());
+    			list = clientVersionMapper.selectByExample(example);
+    			if (list.size() > 0) {
+    				clientVersionMapper.updateByPrimaryKeySelective(clientVersion);
+    				logMsg = RetMsgTemplate.MSG_TEMPLATE_OPERATION_OK;
+    				logger.info(logMsg);
+    				resBody.obj1 = clientVersion;
+    				resBody.statusMsg = logMsg; 
+    				return HttpServletResponse.SC_OK;
+    			} else {
+    				logMsg = RetMsgTemplate.MSG_TEMPLATE_NOT_FIND_BY_ID.replace("%s", String.valueOf(clientVersion.getId()));
+    				logger.error(logMsg);
+    				resBody.obj1 = null;
+    				resBody.statusMsg = logMsg;
+    				return HttpServletResponse.SC_NOT_FOUND;
+    			}
+        	}
 		
 	}
 
