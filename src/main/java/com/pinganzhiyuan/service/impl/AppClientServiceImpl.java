@@ -27,15 +27,27 @@ public class AppClientServiceImpl implements AppClientService {
 
     @Override
     public int index(List<AppClient> pointList, ResponseBody resBody) {
-        List<AppClient> list = appClientMapper.selectAllWithChannel();
-        AppClientExample example = new AppClientExample();
+        List<AppClient> list = appClientMapper.selectAllGroupByNameAndPackageName();
       
         if (list != null && list.size() != 0) {
             resBody.statusMsg = "查询成功";
             resBody.obj1 = list;
             return HttpServletResponse.SC_OK;
         }
+        
         return HttpServletResponse.SC_NOT_FOUND;
     }
 
+	@Override
+	public int indexAppClientByChannelId(String channelId, ResponseBody resBody) {
+		List<AppClient> list = appClientMapper.selectByChannelId(channelId);
+		
+		if (list != null && list.size() != 0) {
+            resBody.statusMsg = "查询成功";
+            resBody.obj1 = list;
+            return HttpServletResponse.SC_OK;
+        }
+        return HttpServletResponse.SC_NOT_FOUND;
+	}
+	
 }

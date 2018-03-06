@@ -7,13 +7,13 @@
 
   <!-- 根据本地环境填写JDBC驱动包的路径 -->
   <!-- <classPathEntry location="/Users/chaiyu/mysql-connector-java-5.1.43/mysql-connector-java-5.1.43-bin.jar" /> -->
-    <classPathEntry location="/Users/nimon/Important/java/mysql-connector/mysql-connector-java-5.1.44-bin.jar" />
+    <classPathEntry location="/Users/nijun/Develop/Important/java/mysql-connector/mysql-connector-java-5.1.44-bin.jar" />
 
  <!-- <classPathEntry location="C:/Users/mysql-connector-java-5.1.44/mysql-connector-java-5.1.44-bin.jar" /> -->
  
   <context id="pinganzhiyuan" targetRuntime="MyBatis3">
     <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-        connectionURL="jdbc:mysql://119.23.12.36:3306/panda_loan_dev"
+        connectionURL="jdbc:mysql://119.23.12.36:3306/panda_loan"
         userId="panda_loan"
         password="panda!QAZ">
     </jdbcConnection>
