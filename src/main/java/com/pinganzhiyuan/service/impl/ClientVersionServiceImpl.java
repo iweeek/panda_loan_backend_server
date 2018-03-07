@@ -13,11 +13,16 @@ import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
 import com.pinganzhiyuan.mapper.AppClientMapper;
+import com.pinganzhiyuan.mapper.AppColumnMapper;
 import com.pinganzhiyuan.mapper.ChannelMapper;
+import com.pinganzhiyuan.mapper.ClientColumnMappingMapper;
 import com.pinganzhiyuan.mapper.ClientVersionMapper;
 import com.pinganzhiyuan.mapper.ProductMapper;
 import com.pinganzhiyuan.model.AppClient;
+import com.pinganzhiyuan.model.AppColumn;
+import com.pinganzhiyuan.model.AppColumnExample;
 import com.pinganzhiyuan.model.Channel;
+import com.pinganzhiyuan.model.ClientColumnMapping;
 import com.pinganzhiyuan.model.ClientVersion;
 import com.pinganzhiyuan.model.ClientVersionExample;
 import com.pinganzhiyuan.model.Product;
@@ -42,6 +47,10 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
     private AppClientService appClientService;
     @Autowired
     private ProductMapper productMapper;
+    @Autowired
+    private AppColumnMapper appColumnMapper;
+    @Autowired
+    private ClientColumnMappingMapper clientColumnMappingMapper;
 
     @Override
     public ClientVersion getLatestVersionInfo(byte platformId, long channelId, String packageName) {
@@ -76,12 +85,14 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
 		//判断数据是否重复
 		ClientVersionExample example = new ClientVersionExample();
 		example.createCriteria()
-				.andNameEqualTo(clientVersion.getName())
+//				.andNameEqualTo(clientVersion.getName())
 				.andChannelIdEqualTo(clientVersion.getChannelId())
+				.andPackageNameEqualTo(clientVersion.getPackageName())
+				.andPlatformIdEqualTo(clientVersion.getPlatformId())
 				.andVersionCodeEqualTo(clientVersion.getVersionCode());
 		List<ClientVersion> sameRecordList = clientVersionMapper.selectByExample(example);
 		if (sameRecordList.size() != 0) {
-			logMsg = "已经存在有着相同 appName、channelId、versionCode 的记录了";
+			logMsg = "已经存在有着相同 channelId、packageName, platformId, versionCode 的记录了";
 			logger.error(logMsg);
 			clientVersion.setId(sameRecordList.get(0).getId());
 			resBody.statusMsg = logMsg;
@@ -96,14 +107,24 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
 				Long appClientId = appClientService.createFromClientVersion(clientVersion);
 				if (appClientId > 0) {
 					ProductExample exp = new ProductExample();
-					exp.createCriteria().andIsPublishedEqualTo(1);
+					// 修改这里：可以指定是否更新全部的产品。
+//					exp.createCriteria().andIsPublishedEqualTo(1);
 					List<Product> products = productMapper.selectByExample(exp);
 					for (Product product : products) {
 						String appClientIds = product.getAppClientIds();
-						String newAppClientIds = appClientIds + ", " + appClientId;
+						String newAppClientIds = appClientIds + "," + appClientId;
 						product.setAppClientIds(newAppClientIds);
 						productMapper.updateByPrimaryKeySelective(product);
 					}
+				}
+				// 同步到 ClientColumnMapping
+				List<AppColumn> appColumns = appColumnMapper.selectByExample(null);
+				for (AppColumn appColumn : appColumns) {
+					ClientColumnMapping clientColumnMapping = new ClientColumnMapping();
+					clientColumnMapping.setPackageName(clientVersion.getPackageName());
+					clientColumnMapping.setPlatformId(clientVersion.getPlatformId().intValue());
+					clientColumnMapping.setColumnKey(appColumn.getColumnKey());
+					clientColumnMappingMapper.insert(clientColumnMapping);
 				}
 			}
 			logMsg = RetMsgTemplate.MSG_TEMPLATE_OPERATION_OK;
@@ -119,12 +140,14 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
 		//判断数据是否重复
 		ClientVersionExample example = new ClientVersionExample();
 		example.createCriteria()
-				.andNameEqualTo(clientVersion.getName())
+//				.andNameEqualTo(clientVersion.getName())
 				.andChannelIdEqualTo(clientVersion.getChannelId())
+				.andPlatformIdEqualTo(clientVersion.getPlatformId())
+				.andPackageNameEqualTo(clientVersion.getPackageName())
 				.andVersionCodeEqualTo(clientVersion.getVersionCode());
 		List<ClientVersion> sameRecordList = clientVersionMapper.selectByExample(example);
 		if (sameRecordList.size() != 0 && !sameRecordList.get(0).getId().equals(clientVersion.getId())) {
-			logMsg = "已经存在有着相同 appName、channelId、versionCode 的记录了";
+			logMsg = "已经存在有着相同 channelId、packageName, platformId, versionCode 的记录了";
 			logger.error(logMsg);
 			clientVersion.setId(sameRecordList.get(0).getId());
 			resBody.statusMsg = logMsg;

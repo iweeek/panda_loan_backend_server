@@ -292,5 +292,11 @@
       <ignoreColumn column="created_at"/>
       <ignoreColumn column="updated_at"/>
     </table>
+    <table schema="panda_loan" tableName="app_column" domainObjectName ="AppColumn" >
+      <generatedKey column="id" sqlStatement="MySql" identity="true" />
+      <ignoreColumn column="created_at"/>
+      <ignoreColumn column="updated_at"/>
+    </table>
+    
   </context>
 </generatorConfiguration>
