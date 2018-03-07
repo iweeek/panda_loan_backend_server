@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pinganzhiyuan.mapper.AppClientMapper;
 import com.pinganzhiyuan.model.AppClient;
 import com.pinganzhiyuan.model.Channel;
 import com.pinganzhiyuan.model.ClientVersion;
@@ -46,7 +47,7 @@ public class ClientVersionController {
     private ChannelService channelService;
 	
     @Autowired
-    private AppClientService appClientService;
+    private AppClientMapper appClientMapper;
 	
     @ApiOperation(value = "创建版本信息", notes = "创建版本信息")
     @RequestMapping(value = "/clientVersions", method = RequestMethod.POST, produces="application/json;charset=UTF-8") 
@@ -174,33 +175,33 @@ public class ClientVersionController {
 		return ResponseEntity.status(status).body(resBody); 
 	}
 	
-    @SuppressWarnings("rawtypes")
-    @ApiOperation(value = "级联查询", notes = "")
-    @RequestMapping(value = "/cascade", method = RequestMethod.POST, produces="application/json;charset=UTF-8") 
-    public ResponseEntity<?> channelsByAppName(HttpServletResponse response, 
-						    		 @ApiParam("渠道")
-						    		 @RequestParam(name = "channelId", required = false) String channelId,
-						    		 @ApiParam("App名称")
-	 							 @RequestParam(name = "appName", required = false) String appName,
-	 							 @ApiParam("包名")
-    								 @RequestParam(name = "packageName", required = false) String packageName
-                                    ) {
-    		int status = HttpServletResponse.SC_NOT_FOUND;
-    		ResponseBody resBody = null;
-    		if (channelId != null) {
-    	        resBody = new ResponseBody<AppClient>();
-    	        status = appClientService.indexAppClientByChannelId(channelId, resBody);
-    		} 
-    		if (appName != null) {
-    			resBody = new ResponseBody<Channel>();
-//    			status = channelService.indexChannelByAppName(appName, resBody);
-    			status = clientVersionService.selectByAppName(appName, resBody);
-    		}
-    		if (packageName != null) {
-    			resBody = new ResponseBody<ClientVersion>();
-    	        status = clientVersionService.getAppNameByPackageName(packageName, resBody);
-    		}
-        return ResponseEntity.status(status).body(resBody); 
-    }
+//    @SuppressWarnings("rawtypes")
+//    @ApiOperation(value = "级联查询", notes = "")
+//    @RequestMapping(value = "/cascade", method = RequestMethod.POST, produces="application/json;charset=UTF-8") 
+//    public ResponseEntity<?> channelsByAppName(HttpServletResponse response, 
+//						    		 @ApiParam("渠道")
+//						    		 @RequestParam(name = "channelId", required = false) String channelId,
+//						    		 @ApiParam("App名称")
+//	 							 @RequestParam(name = "appName", required = false) String appName,
+//	 							 @ApiParam("包名")
+//    								 @RequestParam(name = "packageName", required = false) String packageName
+//                                    ) {
+//    		int status = HttpServletResponse.SC_NOT_FOUND;
+//    		ResponseBody resBody = null;
+//    		if (channelId != null) {
+//    	        resBody = new ResponseBody<AppClient>();
+//    	        status = appClientService.indexAppClientByChannelId(channelId, resBody);
+//    		} 
+//    		if (appName != null) {
+//    			resBody = new ResponseBody<Channel>();
+////    			status = channelService.indexChannelByAppName(appName, resBody);
+//    			status = clientVersionService.selectByAppName(appName, resBody);
+//    		}
+//    		if (packageName != null) {
+//    			resBody = new ResponseBody<ClientVersion>();
+//    	        status = clientVersionService.getAppNameByPackageName(packageName, resBody);
+//    		}
+//        return ResponseEntity.status(status).body(resBody); 
+//    }
 	
 }

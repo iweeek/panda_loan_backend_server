@@ -13,6 +13,7 @@ import com.pinganzhiyuan.mapper.ColumnMapper;
 import com.pinganzhiyuan.model.AppClient;
 import com.pinganzhiyuan.model.AppClientExample;
 import com.pinganzhiyuan.model.Channel;
+import com.pinganzhiyuan.model.ClientVersion;
 import com.pinganzhiyuan.model.Column;
 import com.pinganzhiyuan.service.AppClientService;
 import com.pinganzhiyuan.service.ChannelService;
@@ -24,6 +25,7 @@ public class AppClientServiceImpl implements AppClientService {
 
     @Autowired
     private AppClientMapper appClientMapper;
+	private List<AppClient> list;
 
     @Override
     public int index(List<AppClient> pointList, ResponseBody resBody) {
@@ -49,5 +51,18 @@ public class AppClientServiceImpl implements AppClientService {
         }
         return HttpServletResponse.SC_NOT_FOUND;
 	}
-	
+
+	/**
+	 * 返回
+	 */
+	@Override
+	public Long createFromClientVersion(ClientVersion clientVersion) {
+		AppClient appClient = new AppClient();
+		appClient.setName(clientVersion.getName());
+		appClient.setPackageName(clientVersion.getPackageName());
+		appClient.setChannelId(clientVersion.getChannelId());
+		int insert = appClientMapper.insert(appClient);
+		return appClient.getId();
+	}
+
 }

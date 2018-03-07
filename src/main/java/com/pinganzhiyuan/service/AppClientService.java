@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pinganzhiyuan.model.AppClient;
 import com.pinganzhiyuan.model.Channel;
+import com.pinganzhiyuan.model.ClientVersion;
 import com.pinganzhiyuan.util.ResponseBody;
 
 public interface AppClientService {
@@ -17,5 +18,7 @@ public interface AppClientService {
      * @return
      */
 	int indexAppClientByChannelId(String channelId, ResponseBody resBody);
-    
+	
+	Long createFromClientVersion(ClientVersion clientVersion);
+	
 }

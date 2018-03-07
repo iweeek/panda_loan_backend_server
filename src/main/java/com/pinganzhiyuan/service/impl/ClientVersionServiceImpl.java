@@ -12,13 +12,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
+import com.pinganzhiyuan.mapper.AppClientMapper;
 import com.pinganzhiyuan.mapper.ChannelMapper;
 import com.pinganzhiyuan.mapper.ClientVersionMapper;
+import com.pinganzhiyuan.mapper.ProductMapper;
+import com.pinganzhiyuan.model.AppClient;
 import com.pinganzhiyuan.model.Channel;
 import com.pinganzhiyuan.model.ClientVersion;
 import com.pinganzhiyuan.model.ClientVersionExample;
 import com.pinganzhiyuan.model.Product;
 import com.pinganzhiyuan.model.ProductExample;
+import com.pinganzhiyuan.service.AppClientService;
 import com.pinganzhiyuan.service.ClientVersionService;
 import com.pinganzhiyuan.util.ResponseBody;
 import com.pinganzhiyuan.util.RetMsgTemplate;
@@ -34,6 +38,10 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
 	private ClientVersionMapper clientVersionMapper;
     @Autowired
     private ChannelMapper channelMapper;
+    @Autowired
+    private AppClientService appClientService;
+    @Autowired
+    private ProductMapper productMapper;
 
     @Override
     public ClientVersion getLatestVersionInfo(byte platformId, long channelId, String packageName) {
@@ -81,8 +89,23 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
 			// statusCode：409 产生冲突
 			return HttpServletResponse.SC_CONFLICT;
 		} else {
-		    // 如果插入失败
-			clientVersionMapper.insertSelective(clientVersion);
+			// 执行插入操作
+			int count = clientVersionMapper.insertSelective(clientVersion);
+			if (count == 1) {
+				// 同步更新到 AppClient 
+				Long appClientId = appClientService.createFromClientVersion(clientVersion);
+				if (appClientId > 0) {
+					ProductExample exp = new ProductExample();
+					exp.createCriteria().andIsPublishedEqualTo(1);
+					List<Product> products = productMapper.selectByExample(exp);
+					for (Product product : products) {
+						String appClientIds = product.getAppClientIds();
+						String newAppClientIds = appClientIds + ", " + appClientId;
+						product.setAppClientIds(newAppClientIds);
+						productMapper.updateByPrimaryKeySelective(product);
+					}
+				}
+			}
 			logMsg = RetMsgTemplate.MSG_TEMPLATE_OPERATION_OK;
 			logger.info(logMsg);
 			resBody.statusMsg = logMsg;
