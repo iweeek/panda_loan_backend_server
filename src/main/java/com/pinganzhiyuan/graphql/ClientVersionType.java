@@ -125,6 +125,7 @@ public class ClientVersionType {
                    .argument(GraphQLArgument.newArgument().name("channelId").type(Scalars.GraphQLString).build())
                    .argument(GraphQLArgument.newArgument().name("packageName").type(Scalars.GraphQLString).build())
                    .argument(GraphQLArgument.newArgument().name("platformId").type(Scalars.GraphQLInt).build())
+                   .argument(GraphQLArgument.newArgument().name("isPublished").type(Scalars.GraphQLInt).build())
                    .name("clientVersionsCascade")
                    .description("级联查询")
                    .type(new GraphQLList(getType()))
@@ -134,6 +135,7 @@ public class ClientVersionType {
 	                   String appName = environment.getArgument("appName");
 	                   String packageName = environment.getArgument("packageName");
 	                   Integer platformId = environment.getArgument("platformId");
+	                   Integer isPublished = environment.getArgument("isPublished");
 	                   
 	                   ClientVersionExample example = new ClientVersionExample();
                        Criteria criteria = example.createCriteria();
@@ -152,6 +154,14 @@ public class ClientVersionType {
 	                   if (packageName != null && !packageName.equals("")) {
 	                	   		criteria.andPackageNameEqualTo(packageName);
 	                   }
+	                   if (isPublished != null) {
+	                	   		if (isPublished == 1) {
+	                	   			criteria.andIsPublishedEqualTo(true);
+	                	   		} else {
+	                	   			criteria.andIsPublishedEqualTo(false);
+	                	   		}
+	                   }
+	                   
 	                   clientVersions = clientVersionMapper.selectByExample(example);
 	                   return clientVersions;
 	               } ).build();
@@ -165,6 +175,7 @@ public class ClientVersionType {
         		   	   .argument(GraphQLArgument.newArgument().name("appName").type(Scalars.GraphQLString).build())
                    .argument(GraphQLArgument.newArgument().name("channelId").type(Scalars.GraphQLLong).build())
                    .argument(GraphQLArgument.newArgument().name("platformId").type(Scalars.GraphQLInt).build())
+                   .argument(GraphQLArgument.newArgument().name("isPublished").type(Scalars.GraphQLInt).build())
                    .argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
                    .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
                    .name("clientVersions")
@@ -180,6 +191,7 @@ public class ClientVersionType {
                        Integer platformId = environment.getArgument("platformId");
                        Integer pageNumber = environment.getArgument("pageNumber");
                        Integer pageSize = environment.getArgument("pageSize");
+                       Integer isPublished = environment.getArgument("isPublished");
                        
                        ClientVersionExample example = new ClientVersionExample();
                        Criteria criteria = example.createCriteria();
@@ -194,6 +206,13 @@ public class ClientVersionType {
                        }
                        if (platformId != null) {
                     	   		criteria.andPlatformIdEqualTo((byte) platformId.intValue());
+                       }
+                       if (isPublished != null) {
+	               	   		if (isPublished == 1) {
+	               	   			criteria.andIsPublishedEqualTo(true);
+	               	   		} else {
+	               	   			criteria.andIsPublishedEqualTo(false);
+	               	   		}
                        }
                        
                        PageHelper.startPage(pageNumber, pageSize);
