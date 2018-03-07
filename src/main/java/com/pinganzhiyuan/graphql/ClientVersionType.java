@@ -108,6 +108,11 @@ public class ClientVersionType {
 							.type(Scalars.GraphQLString)
 							.description("包名")
 							.build())
+					.field(GraphQLFieldDefinition.newFieldDefinition()
+							.name("isPublished")
+							.type(Scalars.GraphQLBoolean)
+							.description("是否已发布")
+							.build())
 					.build();
 		}
 		return type;
@@ -119,6 +124,7 @@ public class ClientVersionType {
     	   			   .argument(GraphQLArgument.newArgument().name("appName").type(Scalars.GraphQLString).build())
                    .argument(GraphQLArgument.newArgument().name("channelId").type(Scalars.GraphQLString).build())
                    .argument(GraphQLArgument.newArgument().name("packageName").type(Scalars.GraphQLString).build())
+                   .argument(GraphQLArgument.newArgument().name("platformId").type(Scalars.GraphQLInt).build())
                    .name("clientVersionsCascade")
                    .description("级联查询")
                    .type(new GraphQLList(getType()))
@@ -127,23 +133,26 @@ public class ClientVersionType {
 	                   String channelId = environment.getArgument("channelId");
 	                   String appName = environment.getArgument("appName");
 	                   String packageName = environment.getArgument("packageName");
+	                   Integer platformId = environment.getArgument("platformId");
 	                   
-	                   if(channelId == null && appName == null && packageName == null) {
-	                	   		//查询所有
-	                	   		clientVersions = clientVersionMapper.selectByExample(null);
-	                   }
-	                   
+	                   ClientVersionExample example = new ClientVersionExample();
+                       Criteria criteria = example.createCriteria();
+                       
 	                   if (channelId != null && !channelId.equals("")) {
-	                	   		clientVersions = clientVersionMapper.selectByChannelId(channelId);
+	                	   		criteria.andChannelIdEqualTo(Long.parseLong(channelId));
+	                   }
+	                   if (platformId != null) {
+	                	   		criteria.andPlatformIdEqualTo((byte) platformId.intValue());
 	                   }
 	                   
 	                   if (appName != null && !appName.equals("")) {
-	                	   		clientVersions = clientVersionMapper.selectChannelNameByAppName(appName);
+	                	   		criteria.andNameEqualTo(appName);
 	                   }
 	                   
 	                   if (packageName != null && !packageName.equals("")) {
-	                	   		clientVersions = clientVersionMapper.selectByPackageName(packageName);
+	                	   		criteria.andPackageNameEqualTo(packageName);
 	                   }
+	                   clientVersions = clientVersionMapper.selectByExample(example);
 	                   return clientVersions;
 	               } ).build();
 	   }
@@ -155,6 +164,7 @@ public class ClientVersionType {
            verisonMaskQueryField = GraphQLFieldDefinition.newFieldDefinition()
         		   	   .argument(GraphQLArgument.newArgument().name("appName").type(Scalars.GraphQLString).build())
                    .argument(GraphQLArgument.newArgument().name("channelId").type(Scalars.GraphQLLong).build())
+                   .argument(GraphQLArgument.newArgument().name("platformId").type(Scalars.GraphQLInt).build())
                    .argument(GraphQLArgument.newArgument().name("pageNumber").type(Scalars.GraphQLInt).build())
                    .argument(GraphQLArgument.newArgument().name("pageSize").type(Scalars.GraphQLInt).build())
                    .name("clientVersions")
@@ -167,17 +177,23 @@ public class ClientVersionType {
                 	   	   List<ClientVersion> clientVersions = null;
                        Long channelId = environment.getArgument("channelId");
                        String appName = environment.getArgument("appName");
+                       Integer platformId = environment.getArgument("platformId");
                        Integer pageNumber = environment.getArgument("pageNumber");
                        Integer pageSize = environment.getArgument("pageSize");
                        
                        ClientVersionExample example = new ClientVersionExample();
                        Criteria criteria = example.createCriteria();
                        
+                       example.setOrderByClause(" version_code desc ");
+                       
                        if (channelId != null) {
                     	   		criteria.andChannelIdEqualTo(channelId);
                        }
                        if (appName != null) {
                     	   		criteria.andNameEqualTo(appName);
+                       }
+                       if (platformId != null) {
+                    	   		criteria.andPlatformIdEqualTo((byte) platformId.intValue());
                        }
                        
                        PageHelper.startPage(pageNumber, pageSize);

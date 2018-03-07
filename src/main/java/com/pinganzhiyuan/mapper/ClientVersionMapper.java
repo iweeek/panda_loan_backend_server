@@ -126,22 +126,24 @@ public interface ClientVersionMapper {
     /**
      * 根据渠道获取到 appName 集合
      * @param channelId
+     * @param platformId 
      * @return
      */
     @Select({ "select * from client_version where channel_id = #{channelId} group by  name, package_name" })
     @ResultMap("com.pinganzhiyuan.mapper.ClientVersionMapper.BaseResultMap")
-	List<ClientVersion> selectByChannelId(@Param("channelId") String channelId);
+	List<ClientVersion> selectByChannelId(@Param("channelId") String channelId, @Param("platformId") Integer platformId);
     
 	/**
 	 * 根据 AppName 获取到渠道集合
 	 * @param appName
+	 * @param platformId 
 	 * @return
 	 */
 	@Select({ "select a.*, b.name as channel_name " +
 			"from client_version a join channel b on a.channel_id = b.id " +
 			"where a.name = #{appName} group by channel_id\n" })
 	@ResultMap("com.pinganzhiyuan.mapper.ClientVersionMapper.BaseResultMap")
-	List<ClientVersion> selectChannelNameByAppName(@Param("appName") String appName);
+	List<ClientVersion> selectChannelNameByAppName(@Param("appName") String appName, @Param("platformId") Integer platformId);
 
 	/**
 	 * 根据包名查找。

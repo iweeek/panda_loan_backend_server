@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +66,9 @@ public class ClientVersionController {
 			@ApiParam("包名")
 			@RequestParam  String packageName,
 			@ApiParam("渠道ID")
-			@RequestParam Long channelId)
+			@RequestParam Long channelId,
+			@ApiParam("是否发布")
+			@RequestParam Boolean isPublished)
 								{
 		ClientVersion info = new ClientVersion();
 		info.setName(name);
@@ -78,7 +81,7 @@ public class ClientVersionController {
 		info.setPackageName(packageName);
 		info.setMaskSwitch(true);
 		info.setPublishTime(new Date());
-		info.setIsPublished(true);
+		info.setIsPublished(isPublished);
 		
 		if (channelId != null) {
 			info.setChannelId(channelId);
@@ -89,7 +92,7 @@ public class ClientVersionController {
 			}
 		}
 		
-		ResponseBody resBody = new ResponseBody<ClientVersion>();
+		ResponseBody<ClientVersion> resBody = new ResponseBody<ClientVersion>();
 		
 		int status = clientVersionService.create(info, resBody);
 		return ResponseEntity.status(status).body(resBody); 
@@ -115,7 +118,9 @@ public class ClientVersionController {
 			@ApiParam("包名")
 			@RequestParam(required = false)  String packageName,
 			@ApiParam("渠道ID")
-			@RequestParam(required = false)  Long channelId)
+			@RequestParam(required = false)  Long channelId,
+			@ApiParam("是否发布")
+			@RequestParam(required = false) Boolean isPublished)
 								{
 		ClientVersion info = new ClientVersion();
 		info.setId(id);
@@ -146,6 +151,10 @@ public class ClientVersionController {
 		
 		if (packageName != null) {
 			info.setPackageName(packageName);
+		}
+		
+		if (isPublished != null) {
+			info.setIsPublished(isPublished);
 		}
 		
 		if (channelId != null) {
