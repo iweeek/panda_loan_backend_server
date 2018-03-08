@@ -42,11 +42,13 @@ public class PathUtil {
 	
 	// tomcat
 	public static final String IMG_FOLDER_PATH = "image" + File.separator;
+	public static final String FILE_FOLDER_PATH = "file" + File.separator;
 	// nginx
 //	public static final String IMG_FOLDER_PATH = "";
 //	public static final String IMG_STORAGE_PATH = WEBAPP_PATH + File.separator + IMG_FOLDER_PATH + File.separator;
 //	public static final String IMG_STORAGE_PATH = "/Users/nimon/log" + File.separator + IMG_FOLDER_PATH + File.separator;
 	public static final String IMG_STORAGE_PATH = "/usr/local/webserver/nginx/html" + File.separator + IMG_FOLDER_PATH + File.separator;
+	public static final String FILE_STORAGE_PATH = "/Users/nijun/Desktop" + File.separator + FILE_FOLDER_PATH + File.separator;
 	
     public static final String CAPTCHA_FOLDER_PATH = "captcha_storage" + File.separator;
     public static final String CAPTCHA_STORAGE_PATH = WEBAPP_PATH + File.separator + CAPTCHA_FOLDER_PATH + File.separator;
