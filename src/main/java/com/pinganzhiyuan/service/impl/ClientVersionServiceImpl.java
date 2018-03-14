@@ -92,7 +92,8 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
 				.andVersionCodeEqualTo(clientVersion.getVersionCode());
 		List<ClientVersion> sameRecordList = clientVersionMapper.selectByExample(example);
 		if (sameRecordList.size() != 0) {
-			logMsg = "已经存在有着相同 channelId、packageName, platformId, versionCode 的记录了";
+//			logMsg = "已经存在有着相同 channelId、packageName, platformId, versionCode 的记录了";
+			logMsg = "已经存在了相同的记录";
 			logger.error(logMsg);
 			clientVersion.setId(sameRecordList.get(0).getId());
 			resBody.statusMsg = logMsg;
@@ -146,8 +147,11 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
 				.andPackageNameEqualTo(clientVersion.getPackageName())
 				.andVersionCodeEqualTo(clientVersion.getVersionCode());
 		List<ClientVersion> sameRecordList = clientVersionMapper.selectByExample(example);
-		if (sameRecordList.size() != 0 && !sameRecordList.get(0).getId().equals(clientVersion.getId())) {
-			logMsg = "已经存在有着相同 channelId、packageName, platformId, versionCode 的记录了";
+		if (sameRecordList.size() != 0 
+				&& !sameRecordList.get(0).getId().equals(clientVersion.getId())
+				&& !sameRecordList.get(0).getDownloadUrl().equals("")) {
+//			logMsg = "已经存在有着相同 channelId、packageName, platformId, versionCode 的记录了";
+			logMsg = "已经存在了相同的记录";
 			logger.error(logMsg);
 			clientVersion.setId(sameRecordList.get(0).getId());
 			resBody.statusMsg = logMsg;
