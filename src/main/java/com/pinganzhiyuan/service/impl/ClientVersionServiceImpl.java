@@ -92,7 +92,8 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
 				.andVersionCodeEqualTo(clientVersion.getVersionCode());
 		List<ClientVersion> sameRecordList = clientVersionMapper.selectByExample(example);
 		if (sameRecordList.size() != 0) {
-			logMsg = "已经存在有着相同 channelId、packageName, platformId, versionCode 的记录了";
+//			logMsg = "已经存在有着相同 channelId、packageName, platformId, versionCode 的记录了";
+			logMsg = "已经存在了相同的记录";
 			logger.error(logMsg);
 			clientVersion.setId(sameRecordList.get(0).getId());
 			resBody.statusMsg = logMsg;
@@ -103,7 +104,8 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
 			// 执行插入操作
 			int count = clientVersionMapper.insertSelective(clientVersion);
 			if (count == 1) {
-				// 同步更新到 AppClient 
+				// 同步更新到 AppClient 2018年04月09日19:06:35
+				/*
 				Long appClientId = appClientService.createFromClientVersion(clientVersion);
 				if (appClientId > 0) {
 					ProductExample exp = new ProductExample();
@@ -126,6 +128,7 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
 					clientColumnMapping.setColumnKey(appColumn.getColumnKey());
 					clientColumnMappingMapper.insert(clientColumnMapping);
 				}
+				*/
 			}
 			logMsg = RetMsgTemplate.MSG_TEMPLATE_OPERATION_OK;
 			logger.info(logMsg);
@@ -146,8 +149,11 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
 				.andPackageNameEqualTo(clientVersion.getPackageName())
 				.andVersionCodeEqualTo(clientVersion.getVersionCode());
 		List<ClientVersion> sameRecordList = clientVersionMapper.selectByExample(example);
-		if (sameRecordList.size() != 0 && !sameRecordList.get(0).getId().equals(clientVersion.getId())) {
-			logMsg = "已经存在有着相同 channelId、packageName, platformId, versionCode 的记录了";
+		if (sameRecordList.size() != 0 
+				&& !sameRecordList.get(0).getId().equals(clientVersion.getId())
+				&& !sameRecordList.get(0).getDownloadUrl().equals("")) {
+//			logMsg = "已经存在有着相同 channelId、packageName, platformId, versionCode 的记录了";
+			logMsg = "已经存在了相同的记录";
 			logger.error(logMsg);
 			clientVersion.setId(sameRecordList.get(0).getId());
 			resBody.statusMsg = logMsg;
