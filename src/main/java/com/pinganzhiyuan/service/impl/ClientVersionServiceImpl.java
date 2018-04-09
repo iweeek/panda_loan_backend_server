@@ -104,7 +104,8 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
 			// 执行插入操作
 			int count = clientVersionMapper.insertSelective(clientVersion);
 			if (count == 1) {
-				// 同步更新到 AppClient 
+				// 同步更新到 AppClient 2018年04月09日19:06:35
+				/*
 				Long appClientId = appClientService.createFromClientVersion(clientVersion);
 				if (appClientId > 0) {
 					ProductExample exp = new ProductExample();
@@ -127,6 +128,7 @@ public class ClientVersionServiceImpl implements com.pinganzhiyuan.service.Clien
 					clientColumnMapping.setColumnKey(appColumn.getColumnKey());
 					clientColumnMappingMapper.insert(clientColumnMapping);
 				}
+				*/
 			}
 			logMsg = RetMsgTemplate.MSG_TEMPLATE_OPERATION_OK;
 			logger.info(logMsg);
